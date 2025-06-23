@@ -1,0 +1,341 @@
+/* 通用表单容器样式 */
+.auth-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* 表单容器悬停效果 */
+.auth-form:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* 表单标题样式 */
+.auth-form__title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: center;
+  color: #333;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+/* 表单标题下划线效果 */
+.auth-form__title:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(to right, #1890ff, #52c41a);
+  border-radius: 3px;
+}
+
+.auth-form__subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* 表单样式 */
+.auth-form__form {
+  width: 100%;
+}
+
+/* 表单项间距 */
+.auth-form__form .ant-form-item {
+  margin-bottom: 20px;
+}
+
+/* 表单项错误提示样式 */
+.auth-form__form .ant-form-item-explain-error {
+  font-size: 13px;
+  margin-top: 4px;
+  color: #ff4d4f;
+  transition: all 0.3s;
+}
+
+/* 表单项验证动画 */
+.auth-form__form .ant-form-item-has-error .ant-input,
+.auth-form__form .ant-form-item-has-error .ant-input-password,
+.auth-form__form .ant-form-item-has-error .ant-select-selector {
+  animation: shake 0.3s ease-in-out;
+}
+
+/* 定义动画 */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 表单项淡入动画 */
+.auth-form__form .ant-form-item {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* 为每个表单项设置不同的延迟，创造级联效果 */
+.auth-form__form .ant-form-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.auth-form__form .ant-form-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.auth-form__form .ant-form-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.auth-form__form .ant-form-item:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.auth-form__form .ant-form-item:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+/* 表单切换过渡效果 */
+.auth-form {
+  animation: fadeIn 0.5s ease;
+}
+
+/* 响应式设计 - 合并重复的媒体查询 */
+@media screen and (max-width: 576px) {
+  .auth-form {
+    width: 90%;
+    padding: 20px;
+    margin: 15px auto;
+  }
+
+  .auth-form__title {
+    font-size: 20px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+  }
+
+  .auth-form__subtitle {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .auth-form__form .ant-form-item {
+    margin-bottom: 15px;
+  }
+}
+
+/* 表单控件样式 */
+.auth-form__form .ant-input,
+.auth-form__form .ant-input-password,
+.auth-form__form .ant-select-selector {
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+/* 输入框焦点效果 */
+.auth-form__form .ant-input:focus,
+.auth-form__form .ant-input-password:focus,
+.auth-form__form .ant-select-selector:focus {
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  border-color: #1890ff;
+}
+
+/* 按钮样式 */
+.auth-form__form .ant-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+/* 按钮悬停效果 */
+.auth-form__form .ant-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 链接样式 */
+.auth-form__form .ant-form-item-extra a,
+.auth-form__form .auth-form__links a {
+  color: #1890ff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.auth-form__form .ant-form-item-extra a:hover,
+.auth-form__form .auth-form__links a:hover {
+  color: #40a9ff;
+  text-decoration: underline;
+}
+
+/* 表单子标题样式 */
+.auth-form__subtitle {
+  color: #666;
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+/* 错误信息样式优化 */
+.auth-form__form .ant-form-item-explain-error {
+  font-size: 12px;
+  margin-top: 4px;
+  color: #ff4d4f;
+}
+
+/* 表单底部选项样式 */
+.auth-form__options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* Checkbox对齐样式 */
+.auth-form__options .checkbox-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.auth-form__options .checkbox-wrapper span {
+  line-height: 1;
+}
+
+.password-input {
+  margin-bottom: 24px;
+}
+
+.password-input.shake-animation {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.forgot-password {
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.forgot-password:hover {
+  color: #40a9ff;
+}
+
+/* 登录/注册链接样式 */
+.login-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #666;
+}
+
+.login-link-button,
+.register-link {
+  color: #1890ff;
+  margin-left:
+ 4px;
+  font-weight: 500;
+}
+
+.login-link-button:hover,
+.register-link:hover {
+  color: #40a9ff;
+}
+
+/* 按钮样式 */
+.auth-form__submit-btn {
+  width: 100%;
+  height: 40px;
+}
+
+/* 表单底部按钮区域 */
+.auth-form__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.auth-form__back-btn {
+  color: #1890ff;
+}
+
+.auth-form__back-btn:hover {
+  color: #40a9ff;
+  text-decoration: underline;
+}
+
+
+
+/* 密码输入框抖动动画 */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+.shake-animation {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* 响应式样式 */
+@media (max-width: 576px) {
+  .auth-form {
+    padding: 15px;
+  }
+
+  .auth-form__title {
+    font-size: 20px;
+  }
+
+  .auth-form__subtitle {
+    font-size: 12px;
+  }
+}
+
+/* 登录对话框样式 */
+.auth-dialog .modal-content {
+  padding: 0;
+}
+
+.auth-dialog .modal-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.auth-dialog .modal-body {
+  padding-top: 0;
+}

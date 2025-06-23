@@ -1,0 +1,215 @@
+@use '@/styles/variables' as *;
+
+// 轮播图容器样式
+.custom-carousel {
+  position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  line-height: 1.5715;
+  overflow: hidden;
+
+  &__container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  &__track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  // 指示器样式
+  &__dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    &--active {
+      width: 12px;
+      height: 12px;
+      background-color: #fff;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  // 箭头样式
+  &__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1;
+    transition: all 0.3s;
+    outline: none;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    &--prev {
+      left: 16px;
+    }
+
+    &--next {
+      right: 16px;
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  // 不同效果的样式
+  &--slide {
+    .custom-carousel-item {
+      transition: transform 0.3s ease;
+
+      &--active {
+        transform: translateX(0);
+      }
+
+      &:not(.custom-carousel-item--active) {
+        transform: translateX(100%);
+      }
+    }
+  }
+
+  &--fade {
+    .custom-carousel-item {
+      transition: opacity 0.3s ease;
+
+      &--active {
+        opacity: 1;
+      }
+
+      &:not(.custom-carousel-item--active) {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+// 轮播项样式
+.custom-carousel-item {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  display: block;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-carousel {
+    color: rgba(255, 255, 255, 0.85);
+
+    &__dot {
+      background-color: rgba(255, 255, 255, 0.3);
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.5);
+      }
+
+      &--active {
+        background-color: #fff;
+        box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+      }
+    }
+
+    &__arrow {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #000;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+}
+
+// 响应式处理
+@media screen and (max-width: 576px) {
+  .custom-carousel {
+    &__arrow {
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+
+      &--prev {
+        left: 8px;
+      }
+
+      &--next {
+        right: 8px;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    &__dots {
+      bottom: 8px;
+    }
+
+    &__dot {
+      width: 6px;
+      height: 6px;
+      margin: 0 3px;
+
+      &--active {
+        width: 10px;
+        height: 10px;
+      }
+    }
+  }
+}

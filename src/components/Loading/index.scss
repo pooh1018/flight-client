@@ -1,0 +1,101 @@
+@use '@/styles/variables' as *;
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+
+  // 默认尺寸
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+  }
+
+  // 小尺寸变体
+  &.loading-small {
+    padding: 12px;
+
+    .loading-spinner {
+      width: 24px;
+      height: 24px;
+    }
+
+    .loading-text {
+      font-size: 12px;
+      margin-top: 8px;
+    }
+  }
+
+  // 大尺寸变体
+  &.loading-large {
+    padding: 32px;
+
+    .loading-spinner {
+      width: 64px;
+      height: 64px;
+    }
+
+    .loading-text {
+      font-size: 16px;
+      margin-top: 16px;
+    }
+  }
+
+  .loading-text {
+    margin-top: 12px;
+    color: $text-color-secondary;
+    font-size: 14px;
+  }
+
+  .circular {
+    animation: rotate 2s linear infinite;
+    transform-origin: center center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .path {
+    stroke: var(--primary-color);
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+    animation: dash 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
+}
+
+// 暗色主题支持
+@media (prefers-color-scheme: dark) {
+  .loading-container {
+    .loading-text {
+      color: $text-color-secondary;
+    }
+
+    .path {
+      stroke: var(--primary-color);
+    }
+  }
+}

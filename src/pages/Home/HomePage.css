@@ -1,0 +1,11 @@
+.home-page {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 确保页面内容在固定头部下方正确显示 */
+.home-page-content {
+  padding-top: 70px; /* 根据头部高度调整 */
+}

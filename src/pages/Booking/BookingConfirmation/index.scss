@@ -1,0 +1,51 @@
+.booking-confirmation {
+  max-width: 800px;
+  margin: 24px auto;
+  padding: 0 16px;
+
+  .confirmation-card {
+    padding: 24px;
+
+    .confirmation-title {
+      text-align: center;
+      margin-bottom: 0;
+    }
+
+    .flight-info {
+      width: 100%;
+
+      .flight-header {
+        margin-bottom: 16px;
+      }
+
+      .flight-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+
+        .price {
+          color: #f5222d;
+          font-weight: bold;
+        }
+      }
+    }
+
+    .passenger-info,
+    .payment-info {
+      margin: 24px 0;
+    }
+
+    .confirmation-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+  }
+
+  .loading-container,
+  .error-container {
+    text-align: center;
+    padding: 48px;
+    font-size: 16px;
+  }
+}

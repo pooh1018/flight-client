@@ -1,0 +1,120 @@
+@use '@/styles/variables' as *;
+
+@keyframes custom-loading-dot {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.75);
+    opacity: 0.3;
+  }
+}
+
+.custom-loading {
+  &__spinner {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &--small {
+      .custom-loading__dot {
+        width: 6px;
+        height: 6px;
+        margin: 0 2px;
+      }
+    }
+
+    &--default {
+      .custom-loading__dot {
+        width: 8px;
+        height: 8px;
+        margin: 0 3px;
+      }
+    }
+
+    &--large {
+      .custom-loading__dot {
+        width: 12px;
+        height: 12px;
+        margin: 0 4px;
+      }
+    }
+  }
+
+  &__dot {
+    display: inline-block;
+    border-radius: 50%;
+    background-color: #1890ff;
+    animation: custom-loading-dot 1.4s infinite ease-in-out both;
+
+    &:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    &:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+  }
+
+  &__tip {
+    margin-top: 8px;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    text-align: center;
+  }
+
+  &-wrapper {
+    position: relative;
+
+    .custom-loading__spinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    &--active {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 9;
+        background-color: rgba(255, 255, 255, 0.7);
+      }
+
+      > *:not(.custom-loading__spinner) {
+        opacity: 0.5;
+        pointer-events: none;
+        user-select: none;
+      }
+    }
+
+    &--fullscreen {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 9999;
+      background-color: rgba(255, 255, 255, 0.7);
+
+      .custom-loading__spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
+}

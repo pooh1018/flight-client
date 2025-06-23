@@ -1,0 +1,62 @@
+.my-bookings-page {
+    padding: 20px;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+}
+
+.bookings-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.page-title {
+    margin-bottom: 20px;
+    color: #409EFF;
+    font-size: 24px;
+    text-align: center;
+}
+
+.status-tag {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.status-tag.confirmed {
+    background-color: #67C23A;
+    color: white;
+}
+
+.status-tag.cancelled {
+    background-color: #F56C6C;
+    color: white;
+}
+
+.status-tag.completed {
+    background-color: #909399;
+    color: white;
+}
+
+/* 预订详情对话框样式 */
+.booking-details-dialog .el-message-box__content {
+    padding: 20px;
+}
+
+.booking-details-dialog p {
+    margin: 8px 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .bookings-container {
+        padding: 15px;
+    }
+
+    .page-title {
+        font-size: 20px;
+    }
+}

@@ -1,0 +1,29 @@
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  text-align: center;
+
+  .empty-image {
+    height: 100px;
+    margin-bottom: 8px;
+
+    svg {
+      height: 100%;
+      width: auto;
+    }
+  }
+
+  .empty-description {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 14px;
+    line-height: 22px;
+    margin-bottom: 16px;
+  }
+
+  .empty-footer {
+    margin-top: 16px;
+  }
+}

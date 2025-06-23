@@ -1,0 +1,191 @@
+@use '@/styles/variables' as *;
+
+.custom-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 7px;
+  font-size: 12px;
+  line-height: 22px;
+  white-space: nowrap;
+  background: #fafafa;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  cursor: default;
+  opacity: 1;
+  transition: all 0.3s;
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 4px;
+    font-size: 14px;
+  }
+
+  &__text {
+    display: inline-block;
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 4px;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 10px;
+    cursor: pointer;
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+
+  // 尺寸变体
+  &--small {
+    height: 20px;
+    padding: 0 4px;
+    font-size: 11px;
+    line-height: 18px;
+
+    .custom-tag__icon {
+      font-size: 12px;
+    }
+
+    .custom-tag__close {
+      font-size: 9px;
+    }
+  }
+
+  &--large {
+    height: 32px;
+    padding: 0 10px;
+    font-size: 14px;
+    line-height: 30px;
+
+    .custom-tag__icon {
+      font-size: 16px;
+    }
+
+    .custom-tag__close {
+      font-size: 12px;
+    }
+  }
+
+  // 预设颜色
+  &--blue {
+    color: #1890ff;
+    background: #e6f7ff;
+    border-color: #91d5ff;
+  }
+
+  &--red {
+    color: #ff4d4f;
+    background: #fff1f0;
+    border-color: #ffa39e;
+  }
+
+  &--green {
+    color: #52c41a;
+    background: #f6ffed;
+    border-color: #b7eb8f;
+  }
+
+  &--orange {
+    color: #fa8c16;
+    background: #fff7e6;
+    border-color: #ffd591;
+  }
+
+  &--yellow {
+    color: #faad14;
+    background: #feffe6;
+    border-color: #fffb8f;
+  }
+
+  &--purple {
+    color: #722ed1;
+    background: #f9f0ff;
+    border-color: #d3adf7;
+  }
+
+  &--cyan {
+    color: #13c2c2;
+    background: #e6fffb;
+    border-color: #87e8de;
+  }
+
+  &--gray {
+    color: rgba(0, 0, 0, 0.65);
+    background: #fafafa;
+    border-color: #d9d9d9;
+  }
+
+  // 无边框样式
+  &--no-border {
+    border-color: transparent;
+  }
+
+  // 可点击样式
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  // 可选中标签样式
+  &--checkable {
+    background-color: transparent;
+    border-color: transparent;
+    cursor: pointer;
+
+    &:hover {
+      color: #1890ff;
+    }
+
+    &.custom-tag--checked {
+      color: #fff;
+      background-color: #1890ff;
+
+      &:hover {
+        opacity: 0.85;
+      }
+    }
+  }
+
+  // 动画效果
+  &-zoom-enter,
+  &-zoom-appear {
+    animation: custom-tag-zoom-in 0.2s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+  }
+
+  &-zoom-leave {
+    animation: custom-tag-zoom-out 0.2s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+  }
+}
+
+@keyframes custom-tag-zoom-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes custom-tag-zoom-out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}

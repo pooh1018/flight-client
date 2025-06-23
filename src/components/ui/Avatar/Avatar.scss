@@ -1,0 +1,157 @@
+@use '@/styles/variables' as *;
+
+.custom-avatar {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  color: #fff;
+  white-space: nowrap;
+  text-align: center;
+  vertical-align: middle;
+  background: #ccc;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 50%;
+
+  // 形状
+  &--circle {
+    border-radius: 50%;
+  }
+
+  &--square {
+    border-radius: 2px;
+  }
+
+  // 尺寸
+  &--large {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+
+    > * {
+      line-height: 40px;
+    }
+
+    &.custom-avatar--icon {
+      font-size: 24px;
+    }
+  }
+
+  &--small {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+
+    > * {
+      line-height: 24px;
+    }
+
+    &.custom-avatar--icon {
+      font-size: 14px;
+    }
+  }
+
+  // 图片
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  // 图标
+  &--icon {
+    font-size: 18px;
+  }
+
+  // 文字
+  &__string {
+    position: absolute;
+    left: 50%;
+    transform-origin: 0 center;
+  }
+}
+
+// Avatar组样式
+.custom-avatar-group {
+  display: inline-flex;
+  align-items: center;
+
+  .custom-avatar {
+    border: 2px solid #fff;
+    margin-left: -8px;
+    transition: margin-left 0.3s;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &:hover {
+      z-index: 1;
+    }
+  }
+
+  &__max-count {
+    color: #666;
+    background: #fafafa;
+    cursor: pointer;
+
+    &:hover {
+      color: #333;
+      background: #f0f0f0;
+    }
+  }
+}
+
+// 动画效果
+@keyframes custom-avatar-appear {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.custom-avatar {
+  animation: custom-avatar-appear 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+}
+
+// 响应式处理
+@media screen and (max-width: 768px) {
+  .custom-avatar-group {
+    .custom-avatar {
+      margin-left: -4px;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-avatar {
+    background: #404040;
+  }
+
+  .custom-avatar-group {
+    .custom-avatar {
+      border-color: #1f1f1f;
+    }
+
+    &__max-count {
+      color: rgba(255, 255, 255, 0.85);
+      background: #262626;
+
+      &:hover {
+        color: #fff;
+        background: #1f1f1f;
+      }
+    }
+  }
+}

@@ -1,0 +1,153 @@
+@use '@/styles/variables' as *;
+
+@keyframes custom-message-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes custom-message-slide-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+.custom-message-container {
+  position: fixed;
+  top: var(--margin-md, 16px);
+  left: 0;
+  right: 0;
+  z-index: var(--z-index-message, 1010);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.custom-message {
+  padding: var(--padding-xs, 8px) var(--padding-md, 16px);
+  margin-bottom: var(--margin-md, 16px);
+  border-radius: var(--border-radius-base, 4px);
+  box-shadow: var(--shadow-2, 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+              0 6px 16px 0 rgba(0, 0, 0, 0.08),
+              0 9px 28px 8px rgba(0, 0, 0, 0.05));
+  background: var(--bg-white, #fff);
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+  animation: custom-message-slide-in 0.3s ease-out;
+
+  &--leaving {
+    animation: custom-message-slide-out 0.3s ease-in forwards;
+  }
+
+  &__icon {
+    margin-right: var(--margin-xs, 8px);
+    font-size: var(--font-size-lg, 16px);
+    line-height: 1;
+  }
+
+  &__content {
+    padding-right: var(--padding-lg, 24px);
+    font-size: var(--font-size-base, 14px);
+    line-height: 1.5;
+    color: var(--text-color, rgba(0, 0, 0, 0.85));
+  }
+
+  &__close {
+    position: absolute;
+    right: var(--padding-xs, 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    padding: var(--padding-xs, 4px);
+    cursor: pointer;
+    color: var(--text-color-secondary, rgba(0, 0, 0, 0.45));
+    transition: color 0.3s;
+
+    &:hover {
+      color: var(--text-color, rgba(0, 0, 0, 0.75));
+    }
+  }
+
+  // 不同类型的消息样式
+  &--info {
+    .custom-message__icon {
+      color: var(--primary-color, #1890ff);
+    }
+  }
+
+  &--success {
+    .custom-message__icon {
+      color: var(--success-color, #52c41a);
+    }
+  }
+
+  &--warning {
+    .custom-message__icon {
+      color: var(--warning-color, #faad14);
+    }
+  }
+
+  &--error {
+    .custom-message__icon {
+      color: var(--error-color, #ff4d4f);
+    }
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-message {
+    background: var(--dark-component-background, #1f1f1f);
+    box-shadow: var(--dark-shadow-2, 0 3px 6px -4px rgba(0, 0, 0, 0.48),
+                0 6px 16px 0 rgba(0, 0, 0, 0.32),
+                0 9px 28px 8px rgba(0, 0, 0, 0.2));
+
+    &__content {
+      color: var(--dark-text-color, rgba(255, 255, 255, 0.85));
+    }
+
+    &__close {
+      color: var(--dark-text-color-secondary, rgba(255, 255, 255, 0.45));
+
+      &:hover {
+        color: var(--dark-text-color, rgba(255, 255, 255, 0.75));
+      }
+    }
+
+    // 暗色主题下不同类型的消息样式
+    &--info {
+      .custom-message__icon {
+        color: var(--dark-primary-color, #177ddc);
+      }
+    }
+
+    &--success {
+      .custom-message__icon {
+        color: var(--dark-success-color, #49aa19);
+      }
+    }
+
+    &--warning {
+      .custom-message__icon {
+        color: var(--dark-warning-color, #d89614);
+      }
+    }
+
+    &--error {
+      .custom-message__icon {
+        color: var(--dark-error-color, #a61d24);
+      }
+    }
+  }
+}

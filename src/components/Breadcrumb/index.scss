@@ -1,0 +1,100 @@
+@use '@/styles/variables' as *;
+
+.breadcrumb-container {
+  background-color: var(--bg-white);
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+
+  .breadcrumb {
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 1440px;
+    margin: 0 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+
+    .breadcrumb-item {
+      display: inline-flex;
+      align-items: center;
+      color: $text-color-secondary;
+      font-weight: normal;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--primary-color);
+      }
+
+      &:last-child {
+        color: $text-color;
+        font-weight: 500;
+        cursor: default;
+
+        &:hover {
+          color: $text-color;
+        }
+      }
+    }
+
+    .breadcrumb-separator {
+      margin: 0 8px;
+      color: $text-color-secondary;
+      font-size: 12px;
+    }
+  }
+}
+
+/* 自定义链接和当前项样式 */
+.breadcrumb-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--primary-hover-color);
+    text-decoration: underline;
+  }
+}
+
+.breadcrumb-current {
+  color: $text-color;
+  font-weight: 500;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .breadcrumb-container {
+    padding: 10px 16px;
+
+    .breadcrumb {
+      font-size: 13px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .breadcrumb-container {
+    padding: 8px 12px;
+
+    .breadcrumb {
+      font-size: 12px;
+
+      .breadcrumb-separator {
+        margin: 0 6px;
+      }
+    }
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .breadcrumb-container {
+    display: none;
+  }
+}

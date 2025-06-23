@@ -1,0 +1,119 @@
+@use '@/styles/variables' as *;
+
+// 评分组件样式
+.custom-rate {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  color: #fadb14; // 默认星星颜色
+  font-size: 20px;
+  line-height: unset;
+  list-style: none;
+  outline: none;
+
+  &:focus {
+    outline: 0;
+  }
+
+  &--focused {
+    .custom-rate__star {
+      &:focus {
+        outline: 0;
+      }
+
+      &-content {
+        &:focus {
+          outline: 0;
+        }
+      }
+    }
+  }
+
+  &--disabled {
+    cursor: not-allowed;
+
+    .custom-rate__star {
+      cursor: not-allowed;
+
+      &:hover {
+        transform: scale(1);
+      }
+    }
+  }
+
+  &__star {
+    position: relative;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &--active {
+      .custom-rate__star-second {
+        color: inherit;
+      }
+    }
+
+    &-first, &-second {
+      color: #f0f0f0;
+      transition: all 0.3s;
+      user-select: none;
+    }
+
+    &-first {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      opacity: 0;
+
+      .custom-rate__star-content {
+        display: inline-block;
+        margin-right: -50%;
+        color: inherit;
+      }
+    }
+
+    &-second {
+      .custom-rate__star-content {
+        display: inline-block;
+        color: inherit;
+      }
+    }
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-rate {
+    &__star {
+      &-first, &-second {
+        color: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+}
+
+
+// 响应式处理
+@media screen and (max-width: 576px) {
+  .custom-rate {
+    font-size: 18px;
+
+    &__star {
+      margin-right: 6px;
+    }
+  }
+}

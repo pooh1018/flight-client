@@ -1,0 +1,73 @@
+@use '@/styles/variables' as *;
+
+.custom-breadcrumb {
+  color: $text-color-secondary;
+  font-size: 14px;
+  line-height: 1.5;
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+}
+
+.custom-breadcrumb-item {
+  display: flex;
+  align-items: center;
+
+  &__link {
+    color: $text-color;
+    cursor: pointer;
+    transition: color 0.3s;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  &__content {
+    color: $text-color-secondary;
+  }
+
+  &__separator {
+    margin: 0 8px;
+    color: $text-color-secondary;
+  }
+
+  &--active {
+    color: $text-color;
+    font-weight: 500;
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-breadcrumb {
+    color: rgba(255, 255, 255, 0.65);
+
+    &-item {
+      &__link {
+        color: rgba(255, 255, 255, 0.85);
+
+        &:hover {
+          color: $primary-color;
+        }
+      }
+
+      &__content {
+        color: rgba(255, 255, 255, 0.65);
+      }
+
+      &__separator {
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      &--active {
+        color: rgba(255, 255, 255, 0.85);
+      }
+    }
+  }
+}

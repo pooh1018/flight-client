@@ -1,0 +1,156 @@
+@use '@/styles/variables' as *;
+
+// 折叠面板容器样式
+.custom-collapse {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  background-color: #fafafa;
+  border-radius: 2px;
+
+  // 带边框样式
+  &--bordered {
+    border: 1px solid #d9d9d9;
+
+    .custom-collapse-panel {
+      border-bottom: 1px solid #d9d9d9;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  // 图标位于右侧
+  &--icon-right {
+    .custom-collapse-panel__header {
+      flex-direction: row-reverse;
+
+      .custom-collapse-panel__header-text {
+        flex: 1;
+      }
+    }
+  }
+}
+
+// 折叠面板项样式
+.custom-collapse-panel {
+  &__header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    color: rgba(0, 0, 0, 0.85);
+    line-height: 1.5715;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+
+  &__header-text {
+    flex: 1;
+  }
+
+  &__arrow {
+    margin-right: 12px;
+    font-size: 12px;
+    transform: rotate(-90deg);
+    transition: transform 0.24s;
+
+    &--active {
+      transform: rotate(0deg);
+    }
+  }
+
+  &__extra {
+    margin-left: auto;
+    margin-right: 12px;
+  }
+
+  &__content {
+    overflow: hidden;
+    color: rgba(0, 0, 0, 0.85);
+    background-color: #fff;
+    border-top: 1px solid #d9d9d9;
+    transition: all 0.3s ease-in-out;
+  }
+
+  &__content-box {
+    padding: 16px;
+  }
+
+  // 激活状态
+  &--active {
+    .custom-collapse-panel__header {
+      font-weight: 500;
+    }
+  }
+
+  // 禁用状态
+  &--disabled {
+    .custom-collapse-panel__header {
+      color: rgba(0, 0, 0, 0.25);
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-collapse {
+    background-color: #1f1f1f;
+    border-color: #434343;
+
+    &--bordered {
+      .custom-collapse-panel {
+        border-bottom-color: #434343;
+      }
+    }
+  }
+
+  .custom-collapse-panel {
+    &__header {
+      color: rgba(255, 255, 255, 0.85);
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.04);
+      }
+    }
+
+    &__content {
+      color: rgba(255, 255, 255, 0.85);
+      background-color: #141414;
+      border-top-color: #434343;
+    }
+
+    &--disabled {
+      .custom-collapse-panel__header {
+        color: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+}
+
+// 响应式处理
+@media screen and (max-width: 576px) {
+  .custom-collapse {
+    .custom-collapse-panel {
+      &__header {
+        padding: 8px 12px;
+      }
+
+      &__content-box {
+        padding: 12px;
+      }
+    }
+  }
+}

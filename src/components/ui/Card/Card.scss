@@ -1,0 +1,126 @@
+@use '@/styles/variables' as *;
+
+.custom-card {
+  position: relative;
+  background: var(--bg-white);
+  border-radius: var(--border-radius);
+  transition: all 0.3s;
+
+  &--bordered {
+    border: 1px solid var(--border-color);
+  }
+
+  &--hoverable {
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: var(--box-shadow);
+    }
+  }
+
+  &--small {
+    .custom-card__header {
+      padding: 12px 16px;
+      min-height: 36px;
+    }
+
+    .custom-card__body {
+      padding: 12px 16px;
+    }
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 48px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  &__title {
+    flex: 1;
+    overflow: hidden;
+    color: var(--heading-color);
+    font-weight: 500;
+    font-size: 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__extra {
+    margin-left: auto;
+    color: var(--text-color-secondary);
+    font-weight: normal;
+    font-size: 14px;
+  }
+
+  &__cover {
+    > * {
+      display: block;
+      width: 100%;
+    }
+
+    img {
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+  }
+
+  &__body {
+    padding: 24px;
+  }
+
+  &__actions {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: var(--bg-white);
+    border-top: 1px solid var(--border-color);
+  }
+
+  &__action {
+    flex: 1;
+    margin: 12px 0;
+    color: var(--text-color-secondary);
+    text-align: center;
+
+    &:not(:last-child) {
+      border-right: 1px solid var(--border-color);
+    }
+  }
+
+  &--loading {
+    overflow: hidden;
+
+    .custom-card__loading-content {
+      p {
+        margin: 0;
+      }
+    }
+
+    .custom-card__loading-block {
+      height: 14px;
+      margin: 8px 0;
+      background: linear-gradient(
+        90deg,
+        var(--bg-light),
+        var(--bg-hover),
+        var(--bg-light)
+      );
+      background-size: 600% 600%;
+      border-radius: var(--border-radius);
+      animation: card-loading 1.4s ease infinite;
+    }
+  }
+}
+
+@keyframes card-loading {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}

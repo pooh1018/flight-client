@@ -1,0 +1,100 @@
+.ui-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  // 标签位置样式
+  &.ui-form-top {
+    .ui-form-item-label {
+      margin-bottom: 8px;
+    }
+  }
+
+  &.ui-form-left {
+    .ui-form-item {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .ui-form-item-label {
+      width: 120px;
+      text-align: right;
+      padding-right: 12px;
+      line-height: 40px;
+      flex-shrink: 0;
+    }
+
+    .ui-form-item-control {
+      flex: 1;
+    }
+  }
+
+  &.ui-form-right {
+    .ui-form-item {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .ui-form-item-label {
+      width: 120px;
+      text-align: left;
+      padding-left: 12px;
+      line-height: 40px;
+      flex-shrink: 0;
+      order: 2;
+    }
+
+    .ui-form-item-control {
+      flex: 1;
+      order: 1;
+    }
+  }
+}
+
+.ui-form-item {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.has-error {
+    .ui-form-item-control {
+      input, select, textarea, .ui-select, .ui-datepicker-input {
+        border-color: #ff4d4f;
+
+        &:hover {
+          border-color: #ff4d4f;
+        }
+
+        &:focus {
+          border-color: #ff4d4f;
+          box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+        }
+      }
+    }
+  }
+}
+
+.ui-form-item-label {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+
+  &.required::before {
+    content: '*';
+    color: #ff4d4f;
+    margin-right: 4px;
+  }
+}
+
+.ui-form-item-control {
+  position: relative;
+}
+
+.ui-form-item-error {
+  color: #ff4d4f;
+  font-size: 12px;
+  min-height: 20px;
+  margin-top: 4px;
+}

@@ -1,0 +1,161 @@
+@use '../styles/variables' as *;
+@use "sass:color";
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; // 使用固定视口高度
+  overflow: hidden; // 防止整个页面出现滚动条
+  background-color: var(--bg-light);
+
+  .breadcrumb-container {
+    padding: 12px 24px;
+    background-color: var(--bg-white);
+    box-shadow: var(--box-shadow);
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    transition: all 0.3s ease;
+
+    @media (max-width: 768px) {
+      padding: 8px 16px;
+    }
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0;
+    height: calc(100vh - 64px); // 减去header高度
+    margin-top: 64px; // header高度
+    position: relative;
+    transition: all 0.3s ease;
+
+    .content-container {
+      flex: 1;
+      padding: 24px;
+      margin-top: 48px; // 面包屑高度
+      background-color: var(--bg-light);
+      overflow-y: auto; // 添加垂直滚动条
+      overflow-x: hidden; // 隐藏水平滚动条
+      height: calc(100vh - 64px - 48px); // 减去header和breadcrumb高度
+      position: relative;
+
+      // 内容加载器样式
+      .content-wrapper {
+        min-height: 200px;
+        position: relative;
+        transition: opacity 0.3s ease-in-out;
+
+        &.loading {
+          opacity: 0.6;
+        }
+
+        &.loaded {
+          opacity: 1;
+          animation: fadeIn 0.3s ease-in-out;
+        }
+      }
+
+      .content-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+      }
+
+      // 自定义滚动条样式
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: var(--bg-light);
+        border-radius: 4px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+
+        &:hover {
+          background: color.adjust($border-color, $lightness: -10%);
+        }
+      }
+
+      @media (max-width: 768px) {
+        padding: 16px;
+        margin-top: 40px;
+        height: calc(100vh - 64px - 40px);
+      }
+
+      @media (max-width: 480px) {
+        padding: 12px;
+      }
+    }
+  }
+
+  // 首页特殊处理（无面包屑）
+  &:not(:has(.breadcrumb-container)) .content-container {
+    margin-top: 0;
+    height: calc(100vh - 64px);
+  }
+
+  // 大屏幕优化
+  @media (min-width: 1200px) {
+    .content-container {
+      padding: 32px;
+    }
+  }
+
+  // 打印样式优化
+  @media print {
+    height: auto;
+    overflow: visible;
+
+    .main-content {
+      height: auto;
+      margin-top: 0;
+    }
+
+    .breadcrumb-container {
+      position: static;
+      box-shadow: none;
+      padding: 8px 0;
+    }
+
+    .content-container {
+      height: auto;
+      overflow: visible;
+      margin-top: 0;
+      padding: 0;
+    }
+  }
+}
+
+// 确保html和body没有滚动条
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+// 内容淡入动画
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

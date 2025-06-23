@@ -1,0 +1,374 @@
+@use '@/styles/variables' as *;
+
+// 步骤条容器样式
+.custom-steps {
+  display: flex;
+  width: 100%;
+  font-size: 14px;
+  line-height: 1.5715;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.85);
+
+  // 水平方向
+  &--horizontal {
+    flex-direction: row;
+
+    .custom-step {
+      flex: 1;
+      white-space: nowrap;
+      padding-right: 16px;
+      overflow: hidden;
+
+      &:last-child {
+        flex: none;
+        padding-right: 0;
+      }
+
+      &__head {
+        position: relative;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 8px;
+      }
+
+      &__line {
+        position: absolute;
+        top: 12px;
+        left: 32px;
+        right: 0;
+        height: 1px;
+        background-color: #f0f0f0;
+      }
+
+      &__content {
+        display: inline-block;
+        vertical-align: top;
+        text-align: left;
+      }
+    }
+  }
+
+  // 垂直方向
+  &--vertical {
+    flex-direction: column;
+
+    .custom-step {
+      display: flex;
+      flex-direction: row;
+      padding-bottom: 24px;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+
+      &__head {
+        position: relative;
+        padding-right: 16px;
+      }
+
+      &__line {
+        position: absolute;
+        top: 32px;
+        left: 12px;
+        width: 1px;
+        height: calc(100% - 16px);
+        background-color: #f0f0f0;
+      }
+
+      &__content {
+        flex: 1;
+        min-height: 48px;
+      }
+    }
+  }
+
+  // 小尺寸
+  &--small {
+    font-size: 12px;
+
+    .custom-step {
+      &__icon-container {
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        border-radius: 24px;
+      }
+
+      &__number {
+        font-size: 12px;
+      }
+
+      &__title {
+        font-size: 12px;
+        line-height: 24px;
+      }
+    }
+
+    &.custom-steps--horizontal {
+      .custom-step__line {
+        top: 10px;
+        left: 24px;
+      }
+    }
+
+    &.custom-steps--vertical {
+      .custom-step__line {
+        top: 24px;
+        left: 10px;
+      }
+    }
+  }
+
+  // 点状步骤条
+  &--dot {
+    .custom-step {
+      &__icon-container {
+        width: 8px;
+        height: 8px;
+        margin: 8px;
+        border-radius: 8px;
+        background-color: #ccc;
+      }
+
+      &__dot {
+        display: block;
+        width: 8px;
+        height: 8px;
+        border-radius: 8px;
+        background-color: #ccc;
+      }
+
+      &--process {
+        .custom-step__dot {
+          background-color: $primary-color;
+        }
+      }
+
+      &--finish {
+        .custom-step__dot {
+          background-color: $primary-color;
+        }
+      }
+
+      &--error {
+        .custom-step__dot {
+          background-color: $error-color;
+        }
+      }
+    }
+
+    &.custom-steps--horizontal {
+      .custom-step__line {
+        top: 12px;
+        left: 24px;
+      }
+    }
+
+    &.custom-steps--vertical {
+      .custom-step__line {
+        top: 24px;
+        left: 12px;
+      }
+    }
+  }
+}
+
+// 步骤项样式
+.custom-step {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+
+  &__icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+    border-radius: 32px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    transition: all 0.3s;
+  }
+
+  &__icon {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.25);
+
+    &--finish {
+      color: $primary-color;
+    }
+
+    &--error {
+      color: $error-color;
+    }
+  }
+
+  &__number {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.25);
+  }
+
+  &__title {
+    position: relative;
+    display: inline-block;
+    padding-right: 16px;
+    font-size: 16px;
+    line-height: 32px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
+  }
+
+  &__description {
+    color: rgba(0, 0, 0, 0.45);
+    max-width: 140px;
+    white-space: normal;
+  }
+
+  // 等待状态
+  &--wait {
+    .custom-step__icon-container {
+      border-color: rgba(0, 0, 0, 0.25);
+      background-color: #fff;
+    }
+
+    .custom-step__title {
+      color: rgba(0, 0, 0, 0.45);
+    }
+  }
+
+  // 进行中状态
+  &--process {
+    .custom-step__icon-container {
+      border-color: $primary-color;
+      background-color: #fff;
+    }
+
+    .custom-step__number {
+      color: $primary-color;
+    }
+
+    .custom-step__title {
+      color: rgba(0, 0, 0, 0.85);
+      font-weight: 500;
+    }
+  }
+
+  // 完成状态
+  &--finish {
+    .custom-step__icon-container {
+      border-color: $primary-color;
+      background-color: #fff;
+    }
+
+    .custom-step__title {
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    .custom-step__line {
+      background-color: $primary-color;
+    }
+  }
+
+  // 错误状态
+  &--error {
+    .custom-step__icon-container {
+      border-color: $error-color;
+      background-color: #fff;
+    }
+
+    .custom-step__title {
+      color: $error-color;
+    }
+
+    .custom-step__description {
+      color: $error-color;
+    }
+  }
+
+  // 禁用状态
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  // 可点击状态
+  &:not(&--disabled) {
+    cursor: pointer;
+
+    &:hover {
+      .custom-step__title {
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-steps {
+    color: rgba(255, 255, 255, 0.85);
+
+    .custom-step {
+      &__line {
+        background-color: rgba(255, 255, 255, 0.15);
+      }
+
+      &__icon-container {
+        border-color: rgba(255, 255, 255, 0.25);
+        background-color: transparent;
+      }
+
+      &__icon {
+        color: rgba(255, 255, 255, 0.25);
+      }
+
+      &__number {
+        color: rgba(255, 255, 255, 0.25);
+      }
+
+      &__title {
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      &__description {
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      &--wait {
+        .custom-step__icon-container {
+          border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .custom-step__title {
+          color: rgba(255, 255, 255, 0.45);
+        }
+      }
+
+      &--finish {
+        .custom-step__line {
+          background-color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+// 响应式处理
+@media screen and (max-width: 576px) {
+  .custom-steps {
+    &--horizontal {
+      flex-direction: column;
+
+      .custom-step {
+        padding-right: 0;
+        padding-bottom: 16px;
+
+        &__line {
+          display: none;
+        }
+      }
+    }
+  }
+}

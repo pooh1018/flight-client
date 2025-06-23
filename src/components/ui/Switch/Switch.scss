@@ -1,0 +1,145 @@
+@use '@/styles/variables' as *;
+
+.custom-switch {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 44px;
+  height: 22px;
+  line-height: 22px;
+  padding: 0;
+  color: var(--text-color, rgba(0, 0, 0, 0.85));
+  background-color: var(--switch-bg, rgba(0, 0, 0, 0.25));
+  border: 0;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+  outline: none;
+
+  // 开关状态
+  &--checked {
+    background-color: var(--primary-color, #1890ff);
+
+    .custom-switch__handle {
+      left: calc(100% - 20px);
+    }
+  }
+
+  // 禁用状态
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+
+    &.custom-switch--checked {
+      background-color: var(--primary-color, #1890ff);
+    }
+  }
+
+  // 小尺寸
+  &--small {
+    min-width: 28px;
+    height: 16px;
+    line-height: 16px;
+
+    .custom-switch__handle {
+      width: 12px;
+      height: 12px;
+      top: 2px;
+      left: 2px;
+    }
+
+    &.custom-switch--checked {
+      .custom-switch__handle {
+        left: calc(100% - 14px);
+      }
+    }
+
+    .custom-switch__inner {
+      margin: 0 7px 0 18px;
+      font-size: 12px;
+    }
+
+    &.custom-switch--checked {
+      .custom-switch__inner {
+        margin: 0 18px 0 7px;
+      }
+    }
+  }
+
+  // 加载状态
+  &--loading {
+    cursor: default;
+
+    .custom-switch__loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      border: 2px solid var(--switch-loading-color, #fff);
+      border-top-color: transparent;
+      transform: translate(-50%, -50%);
+      animation: custom-switch-loading 1s infinite linear;
+    }
+  }
+
+  // 开关手柄
+  &__handle {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--switch-handle-bg, #fff);
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px 0 var(--switch-handle-shadow, rgba(0, 35, 11, 0.2));
+  }
+
+  // 内容
+  &__inner {
+    display: block;
+    margin: 0 7px 0 25px;
+    color: var(--switch-text-color, #fff);
+    font-size: 12px;
+    transition: margin 0.2s;
+  }
+
+  &--checked {
+    .custom-switch__inner {
+      margin: 0 25px 0 7px;
+    }
+  }
+}
+
+// 加载动画
+@keyframes custom-switch-loading {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-switch {
+    background-color: var(--switch-dark-bg, rgba(255, 255, 255, 0.35));
+
+    &--checked {
+      background-color: var(--primary-color, #1890ff);
+    }
+  }
+}
+
+// 响应式处理
+@media screen and (max-width: 576px) {
+  .custom-switch {
+    &__inner {
+      font-size: 10px;
+    }
+  }
+}

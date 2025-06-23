@@ -1,0 +1,251 @@
+@use '@/styles/variables' as *;
+
+@keyframes custom-drawer-mask-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes custom-drawer-mask-fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes custom-drawer-right-in {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes custom-drawer-right-out {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes custom-drawer-left-in {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes custom-drawer-left-out {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes custom-drawer-top-in {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes custom-drawer-top-out {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes custom-drawer-bottom-in {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes custom-drawer-bottom-out {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.custom-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  pointer-events: none;
+
+  &__mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    pointer-events: auto;
+  }
+
+  &__content {
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    pointer-events: auto;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  &__body {
+    flex: 1;
+    padding: 24px;
+    overflow: auto;
+  }
+
+  &__footer {
+    padding: 10px 16px;
+    border-top: 1px solid #f0f0f0;
+    text-align: right;
+    flex-shrink: 0;
+
+    button + button {
+      margin-left: 8px;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    padding: 12px;
+    color: rgba(0, 0, 0, 0.45);
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    transition: color 0.3s;
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.75);
+    }
+  }
+
+  // 位置样式
+  &--left {
+    .custom-drawer__content {
+      top: 0;
+      left: 0;
+      height: 100%;
+    }
+  }
+
+  &--right {
+    .custom-drawer__content {
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  }
+
+  &--top {
+    .custom-drawer__content {
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+  }
+
+  &--bottom {
+    .custom-drawer__content {
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+  }
+
+  // 动画样式
+  &--open {
+    &.custom-drawer--right .custom-drawer__content {
+      animation: custom-drawer-right-in 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    &.custom-drawer--left .custom-drawer__content {
+      animation: custom-drawer-left-in 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    &.custom-drawer--top .custom-drawer__content {
+      animation: custom-drawer-top-in 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    &.custom-drawer--bottom .custom-drawer__content {
+      animation: custom-drawer-bottom-in 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .custom-drawer__mask {
+      animation: custom-drawer-mask-fade-in 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+  }
+
+  &--close {
+    &.custom-drawer--right .custom-drawer__content {
+      animation: custom-drawer-right-out 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    &.custom-drawer--left .custom-drawer__content {
+      animation: custom-drawer-left-out 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    &.custom-drawer--top .custom-drawer__content {
+      animation: custom-drawer-top-out 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    &.custom-drawer--bottom .custom-drawer__content {
+      animation: custom-drawer-bottom-out 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .custom-drawer__mask {
+      animation: custom-drawer-mask-fade-out 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+  }
+}

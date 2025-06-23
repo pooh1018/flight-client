@@ -1,0 +1,213 @@
+@use '@/styles/variables' as *;
+
+.custom-timeline {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+
+  // 基础样式
+  &--left {
+    .custom-timeline-item {
+      &__label {
+        text-align: right;
+        right: calc(50% + 14px);
+        left: auto;
+      }
+
+      &__content {
+        left: calc(50% + 14px);
+        text-align: left;
+      }
+    }
+  }
+
+  &--right {
+    .custom-timeline-item {
+      &__label {
+        text-align: left;
+        left: calc(50% + 14px);
+        right: auto;
+      }
+
+      &__content {
+        right: calc(50% + 14px);
+        left: auto;
+        text-align: right;
+      }
+    }
+  }
+
+  &--alternate {
+    .custom-timeline-item {
+      &--left {
+        .custom-timeline-item__label {
+          text-align: right;
+          right: calc(50% + 14px);
+          left: auto;
+        }
+
+        .custom-timeline-item__content {
+          left: calc(50% + 14px);
+          text-align: left;
+        }
+      }
+
+      &--right {
+        .custom-timeline-item__label {
+          text-align: left;
+          left: calc(50% + 14px);
+          right: auto;
+        }
+
+        .custom-timeline-item__content {
+          right: calc(50% + 14px);
+          left: auto;
+          text-align: right;
+        }
+      }
+    }
+  }
+
+  // 反向样式
+  &--reverse {
+    .custom-timeline-item {
+      &__tail {
+        top: auto;
+        bottom: 0;
+      }
+    }
+  }
+
+  // 待处理样式
+  &--pending {
+    .custom-timeline-item:not(.custom-timeline-item--last) {
+      .custom-timeline-item__tail {
+        display: block;
+      }
+    }
+  }
+}
+
+// 时间线项样式
+.custom-timeline-item {
+  position: relative;
+  margin: 0;
+  padding-bottom: 20px;
+  font-size: 14px;
+  list-style: none;
+
+  &:last-child {
+    padding-bottom: 0;
+
+    .custom-timeline-item__tail {
+      display: none;
+    }
+  }
+
+  // 尾巴线
+  &__tail {
+    position: absolute;
+    top: 10px;
+    height: calc(100% - 10px);
+    border-left: 2px solid #f0f0f0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  // 点
+  &__dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    border: 2px solid #1890ff;
+    border-radius: 100px;
+    left: 50%;
+    top: 5px;
+    transform: translateX(-50%);
+
+    &--custom {
+      width: auto;
+      height: auto;
+      border: 0;
+      border-radius: 0;
+      transform: translate(-50%, -50%);
+      top: 5px;
+    }
+
+    &--blue {
+      border-color: #1890ff;
+    }
+
+    &--red {
+      border-color: #ff4d4f;
+    }
+
+    &--green {
+      border-color: #52c41a;
+    }
+
+    &--gray {
+      border-color: #d9d9d9;
+    }
+  }
+
+  // 内容
+  &__content {
+    position: relative;
+    top: -7px;
+    width: calc(50% - 14px);
+    word-break: break-word;
+  }
+
+  // 标签
+  &__label {
+    position: absolute;
+    width: calc(50% - 14px);
+    top: -7px;
+  }
+
+  // 待处理项
+  &--pending {
+    .custom-timeline-item__dot {
+      font-size: 12px;
+      background-color: transparent;
+      border-color: transparent;
+    }
+  }
+
+  // 最后一项
+  &--last {
+    padding-bottom: 0;
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-timeline-item {
+    &__tail {
+      border-left-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+// 响应式处理
+@media screen and (max-width: 576px) {
+  .custom-timeline {
+    &--alternate, &--right, &--left {
+      .custom-timeline-item {
+        &__content {
+          left: calc(50% + 12px);
+          width: calc(50% - 12px);
+          text-align: left;
+        }
+
+        &__label {
+          display: none;
+        }
+      }
+    }
+  }
+}

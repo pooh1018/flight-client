@@ -1,0 +1,402 @@
+.flight-item {
+  background-color: var(--bg-white);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+
+    .item-actions {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  // 航空公司信息
+  .airline-info {
+    flex: 0 0 80px;
+    text-align: center;
+
+    .airline-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      margin-bottom: 4px;
+    }
+
+    .airline-name {
+      font-size: 12px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  // 航班信息
+  .flight-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    // 出发和到达信息
+    .time-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      flex: 1;
+
+      .time-point {
+        text-align: center;
+
+        .time {
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--text-primary);
+          margin-bottom: 2px;
+        }
+
+        .city {
+          font-size: 14px;
+          color: var(--text-secondary);
+        }
+
+        .airport {
+          font-size: 12px;
+          color: var(--text-disabled);
+        }
+      }
+
+      // 连接线
+      .connection-line {
+        flex: 1;
+        height: 2px;
+        background: linear-gradient(90deg,
+          var(--primary-color) 0%,
+          var(--primary-color) 40%,
+          var(--primary-color-light) 40%,
+          var(--primary-color-light) 60%,
+          var(--primary-color) 60%,
+          var(--primary-color) 100%
+        );
+        position: relative;
+        margin: 0 8px;
+
+        &::before, &::after {
+          content: '';
+          position: absolute;
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: var(--primary-color);
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
+        &::before {
+          left: -3px;
+        }
+
+        &::after {
+          right: -3px;
+        }
+
+        .duration {
+          position: absolute;
+          top: -16px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 12px;
+          color: var(--text-secondary);
+          background-color: var(--primary-color-light);
+          padding: 1px 6px;
+          border-radius: 10px;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    // 航班详情
+    .flight-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 0 0 120px;
+
+      .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text-secondary);
+
+        .icon {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  // 价格信息
+  .price-info {
+    flex: 0 0 100px;
+    text-align: right;
+    padding-right: 16px;
+
+    .price {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 2px;
+
+      .currency {
+        font-size: 14px;
+        margin-right: 2px;
+      }
+    }
+
+    .price-type {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+  }
+
+  // 操作按钮
+  .item-actions {
+    flex: 0 0 auto;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+
+    .el-button {
+      padding: 8px 16px;
+      font-size: 14px;
+
+      &.el-button--primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+
+        &:hover {
+          background-color: var(--primary-color-dark);
+          border-color: var(--primary-color-dark);
+        }
+      }
+    }
+  }
+
+  // 标签
+  .item-tags {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    gap: 4px;
+
+    .tag {
+      padding: 2px 6px;
+      font-size: 10px;
+      border-radius: 0 0 4px 0;
+
+      &.discount {
+        background-color: #fff2e8;
+        color: #fa541c;
+      }
+
+      &.recommended {
+        background-color: #f6ffed;
+        color: #52c41a;
+      }
+    }
+  }
+
+  // 状态指示器
+  .status-indicator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 24px 24px 0;
+
+    &.on-time {
+      border-color: transparent #52c41a transparent transparent;
+    }
+
+    &.delayed {
+      border-color: transparent #faad14 transparent transparent;
+    }
+
+    &.cancelled {
+      border-color: transparent #ff4d4f transparent transparent;
+    }
+  }
+}
+
+// 响应式样式
+@media (max-width: 768px) {
+  .flight-item {
+    flex-direction: column;
+    padding: 12px;
+
+    .airline-info {
+      flex: none;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+
+      .airline-logo {
+        margin-bottom: 0;
+      }
+    }
+
+    .flight-info {
+      flex-direction: column;
+      align-items: stretch;
+
+      .time-info {
+        margin-bottom: 8px;
+      }
+
+      .flight-details {
+        flex: none;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        .detail-item {
+          flex: 1 1 calc(50% - 4px);
+        }
+      }
+    }
+
+    .price-info {
+      flex: none;
+      width: 100%;
+      text-align: left;
+      padding-right: 0;
+      margin-top: 8px;
+    }
+
+    .item-actions {
+      opacity: 1;
+      transform: none;
+      width: 100%;
+      margin-top: 12px;
+
+      .el-button {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// 暗色主题
+.dark-theme {
+  .flight-item {
+    background-color: var(--bg-dark);
+
+    .airline-info {
+      .airline-name {
+        color: rgba(255, 255, 255, 0.65);
+      }
+    }
+
+    .flight-info {
+      .time-info {
+        .time-point {
+          .time {
+            color: white;
+          }
+
+          .city {
+            color: rgba(255, 255, 255, 0.65);
+          }
+
+          .airport {
+            color: rgba(255, 255, 255, 0.45);
+          }
+        }
+      }
+
+      .flight-details {
+        .detail-item {
+          color: rgba(255, 255, 255, 0.65);
+        }
+      }
+    }
+
+    .price-info {
+      .price-type {
+        color: rgba(255, 255, 255, 0.65);
+      }
+    }
+  }
+}
+
+// 加载状态
+.flight-item-skeleton {
+  background-color: var(--bg-white);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .skeleton-block {
+    background: linear-gradient(90deg,
+      var(--border-color) 25%,
+      var(--bg-light) 37%,
+      var(--border-color) 63%
+    );
+    background-size: 400% 100%;
+    animation: skeleton-loading 1.4s ease infinite;
+    border-radius: 4px;
+
+    &.logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    &.content {
+      flex: 1;
+      height: 80px;
+    }
+
+    &.price {
+      width: 80px;
+      height: 40px;
+    }
+
+    &.action {
+      width: 80px;
+      height: 32px;
+    }
+  }
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}

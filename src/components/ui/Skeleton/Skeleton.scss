@@ -1,0 +1,191 @@
+@use '@/styles/variables' as *;
+
+// 骨架屏动画
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+// 骨架屏基础样式
+.custom-skeleton {
+  display: flex;
+  width: 100%;
+
+  &__header {
+    margin-right: 16px;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  // 激活动画效果
+  &--active {
+    .custom-skeleton-title,
+    .custom-skeleton-paragraph__row,
+    .custom-skeleton-avatar,
+    .custom-skeleton-button,
+    .custom-skeleton-image {
+      background: linear-gradient(
+        90deg,
+        rgba(190, 190, 190, 0.2) 25%,
+        rgba(129, 129, 129, 0.24) 37%,
+        rgba(190, 190, 190, 0.2) 63%
+      );
+      background-size: 400% 100%;
+      animation: skeleton-loading 1.4s ease infinite;
+    }
+  }
+}
+
+// 骨架屏标题
+.custom-skeleton-title {
+  height: 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  background: rgba(190, 190, 190, 0.2);
+  border-radius: 4px;
+}
+
+// 骨架屏段落
+.custom-skeleton-paragraph {
+  margin-top: 16px;
+
+  &__row {
+    height: 16px;
+    margin-top: 16px;
+    background: rgba(190, 190, 190, 0.2);
+    border-radius: 4px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+}
+
+// 骨架屏头像
+.custom-skeleton-avatar {
+  display: inline-block;
+  vertical-align: top;
+  background: rgba(190, 190, 190, 0.2);
+
+  // 形状
+  &--circle {
+    border-radius: 50%;
+  }
+
+  &--square {
+    border-radius: 4px;
+  }
+
+  // 尺寸
+  &--small {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+  }
+
+  &--default {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
+
+  &--large {
+    width: 64px;
+    height: 64px;
+    line-height: 64px;
+  }
+}
+
+// 骨架屏按钮
+.custom-skeleton-button {
+  display: inline-block;
+  height: 32px;
+  width: 80px;
+  background: rgba(190, 190, 190, 0.2);
+  border-radius: 4px;
+
+  // 尺寸
+  &--small {
+    height: 24px;
+    width: 60px;
+  }
+
+  &--default {
+    height: 32px;
+    width: 80px;
+  }
+
+  &--large {
+    height: 40px;
+    width: 100px;
+  }
+
+  // 形状
+  &--circle {
+    border-radius: 50%;
+    width: 32px;
+  }
+
+  &--round {
+    border-radius: 32px;
+  }
+
+  // 块级按钮
+  &--block {
+    display: block;
+    width: 100%;
+  }
+}
+
+// 骨架屏图片
+.custom-skeleton-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(190, 190, 190, 0.2);
+  border-radius: 4px;
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    fill: rgba(190, 190, 190, 0.4);
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-skeleton {
+    &--active {
+      .custom-skeleton-title,
+      .custom-skeleton-paragraph__row,
+      .custom-skeleton-avatar,
+      .custom-skeleton-button,
+      .custom-skeleton-image {
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.08) 25%,
+          rgba(255, 255, 255, 0.12) 37%,
+          rgba(255, 255, 255, 0.08) 63%
+        );
+      }
+    }
+  }
+
+  .custom-skeleton-title,
+  .custom-skeleton-paragraph__row,
+  .custom-skeleton-avatar,
+  .custom-skeleton-button,
+  .custom-skeleton-image {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .custom-skeleton-image__icon {
+    fill: rgba(255, 255, 255, 0.1);
+  }
+}

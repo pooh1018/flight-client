@@ -1,0 +1,174 @@
+@use '@/styles/variables' as *;
+
+// 警告提示组件样式
+.custom-alert {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 15px;
+  word-wrap: break-word;
+  border-radius: var(--border-radius);
+  margin-bottom: 16px;
+  transition: all 0.3s;
+
+  // 类型样式
+  &--info {
+    background-color: var(--info-bg, $info-bg);
+    border: 1px solid var(--info-border, $info-border);
+
+    .custom-alert__icon {
+      color: var(--info-color, $info-color);
+    }
+  }
+
+  &--success {
+    background-color: var(--success-bg, $success-bg);
+    border: 1px solid var(--success-border, $success-border);
+
+    .custom-alert__icon {
+      color: var(--success-color, $success-color);
+    }
+  }
+
+  &--warning {
+    background-color: var(--warning-bg, $warning-bg);
+    border: 1px solid var(--warning-border, $warning-border);
+
+    .custom-alert__icon {
+      color: var(--warning-color, $warning-color);
+    }
+  }
+
+  &--error {
+    background-color: var(--error-bg, $error-bg);
+    border: 1px solid var(--error-border, $error-border);
+
+    .custom-alert__icon {
+      color: var(--error-color, $error-color);
+    }
+  }
+
+  // 横幅模式
+  &--banner {
+    border-radius: 0;
+    border: 0;
+    margin-bottom: 0;
+  }
+
+  // 带图标
+  &--with-icon {
+    padding-left: 38px;
+
+    .custom-alert__icon {
+      position: absolute;
+      top: 8px;
+      left: 16px;
+      font-size: 16px;
+    }
+
+    &.custom-alert--with-description {
+      padding-left: 48px;
+
+      .custom-alert__icon {
+        font-size: 24px;
+        top: 12px;
+      }
+    }
+  }
+
+  // 带描述
+  &--with-description {
+    padding: 15px 15px 15px 64px;
+    align-items: center;
+
+    .custom-alert__message {
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: var(--text-color, $text-color);
+    }
+
+    .custom-alert__description {
+      font-size: 14px;
+    }
+  }
+
+  // 内容区域
+  &__content {
+    flex: 1;
+  }
+
+  // 消息
+  &__message {
+    font-size: 14px;
+    color: var(--text-color, $text-color);
+  }
+
+  // 描述
+  &__description {
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--text-color-secondary, $text-color-secondary);
+  }
+
+  // 图标
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    font-size: 16px;
+    margin-right: 8px;
+
+    svg {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+
+  // 关闭按钮
+  &__close-btn {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    padding: 0;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 12px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    color: var(--text-color-secondary, $text-color-secondary);
+    transition: color 0.3s;
+
+    &:hover {
+      color: var(--text-color, $text-color);
+    }
+  }
+
+  &__close-icon {
+    display: block;
+    font-size: 14px;
+  }
+}
+
+// 响应式处理
+@media screen and (max-width: 576px) {
+  .custom-alert {
+    padding: 8px 12px;
+
+    &--with-description {
+      padding: 12px 12px 12px 48px;
+    }
+
+    &--with-icon {
+      padding-left: 30px;
+
+      .custom-alert__icon {
+        left: 12px;
+      }
+
+      &.custom-alert--with-description {
+        padding-left: 42px;
+      }
+    }
+  }
+}

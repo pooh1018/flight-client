@@ -1,0 +1,160 @@
+@use '@/styles/variables' as *;
+
+@keyframes custom-notification-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes custom-notification-fade-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+
+.custom-notification-container {
+  position: fixed;
+  z-index: 1010;
+  pointer-events: none;
+
+  &--topRight {
+    top: 24px;
+    right: 24px;
+  }
+
+  &--topLeft {
+    top: 24px;
+    left: 24px;
+  }
+
+  &--bottomRight {
+    bottom: 24px;
+    right: 24px;
+  }
+
+  &--bottomLeft {
+    bottom: 24px;
+    left: 24px;
+  }
+}
+
+.custom-notification {
+  padding: 16px 24px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #fff;
+  display: flex;
+  width: 384px;
+  position: relative;
+  pointer-events: auto;
+  animation: custom-notification-fade-in 0.3s ease-out;
+
+  &--leaving {
+    animation: custom-notification-fade-out 0.3s ease-in forwards;
+  }
+
+  &__icon {
+    margin-right: 16px;
+    font-size: 24px;
+    line-height: 24px;
+  }
+
+  &__content {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  &__title {
+    margin-bottom: 8px;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  &__message {
+    font-size: 14px;
+    line-height: 21px;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  &__close {
+    position: absolute;
+    right: 22px;
+    top: 16px;
+    color: rgba(0, 0, 0, 0.45);
+    outline: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s;
+    padding: 4px;
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.75);
+    }
+  }
+
+  // 不同类型的通知样式
+  &--info {
+    border-left: 4px solid #1890ff;
+
+    .custom-notification__icon {
+      color: #1890ff;
+    }
+  }
+
+  &--success {
+    border-left: 4px solid #52c41a;
+
+    .custom-notification__icon {
+      color: #52c41a;
+    }
+  }
+
+  &--warning {
+    border-left: 4px solid #faad14;
+
+    .custom-notification__icon {
+      color: #faad14;
+    }
+  }
+
+  &--error {
+    border-left: 4px solid #ff4d4f;
+
+    .custom-notification__icon {
+      color: #ff4d4f;
+    }
+  }
+}
+
+// 响应式样式
+@media screen and (max-width: 384px) {
+  .custom-notification {
+    width: calc(100vw - 48px);
+    margin: 0 24px;
+  }
+
+  .custom-notification-container {
+    &--topLeft,
+    &--bottomLeft {
+      left: 0;
+    }
+
+    &--topRight,
+    &--bottomRight {
+      right: 0;
+    }
+  }
+}

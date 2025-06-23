@@ -1,0 +1,216 @@
+@use '@/styles/variables' as *;
+
+.custom-tabs {
+  display: flex;
+  flex-direction: column;
+
+  &--top {
+    flex-direction: column;
+  }
+
+  &--bottom {
+    flex-direction: column-reverse;
+  }
+
+  &--left {
+    flex-direction: row;
+
+    .custom-tabs__nav {
+      flex-direction: column;
+      border-right: 1px solid var(--border-color-light, #f0f0f0);
+      border-bottom: none;
+    }
+
+    .custom-tabs__tab {
+      margin-right: 0;
+      margin-bottom: var(--margin-xs, 8px);
+      padding: var(--padding-xs, 8px) var(--padding-md, 16px);
+    }
+
+    .custom-tabs__ink-bar {
+      width: 2px;
+      height: auto;
+      right: 0;
+      left: auto;
+    }
+  }
+
+  &--right {
+    flex-direction: row-reverse;
+
+    .custom-tabs__nav {
+      flex-direction: column;
+      border-left: 1px solid var(--border-color-light, #f0f0f0);
+      border-bottom: none;
+    }
+
+    .custom-tabs__tab {
+      margin-right: 0;
+      margin-bottom: var(--margin-xs, 8px);
+      padding: var(--padding-xs, 8px) var(--padding-md, 16px);
+    }
+
+    .custom-tabs__ink-bar {
+      width: 2px;
+      height: auto;
+      left: 0;
+      right: auto;
+    }
+  }
+
+  &--small {
+    .custom-tabs__tab {
+      padding: var(--padding-xs, 4px) var(--padding-sm, 12px);
+      font-size: var(--font-size-sm, 12px);
+    }
+  }
+
+  &--large {
+    .custom-tabs__tab {
+      padding: var(--padding-sm, 12px) var(--padding-md, 16px);
+      font-size: var(--font-size-lg, 16px);
+    }
+  }
+
+  &--card {
+    .custom-tabs__nav {
+      border-bottom: 1px solid var(--border-color-light, #f0f0f0);
+    }
+
+    .custom-tabs__tab {
+      margin-right: 2px;
+      border: 1px solid var(--border-color-light, #f0f0f0);
+      border-bottom: none;
+      border-radius: var(--border-radius-sm, 2px) var(--border-radius-sm, 2px) 0 0;
+      background: var(--bg-gray-light, #fafafa);
+
+      &--active {
+        background: var(--bg-white, #fff);
+        border-bottom-color: var(--bg-white, #fff);
+      }
+    }
+
+    .custom-tabs__ink-bar {
+      display: none;
+    }
+  }
+
+  &__nav {
+    position: relative;
+    display: flex;
+    flex: none;
+    border-bottom: 1px solid var(--border-color-light, #f0f0f0);
+  }
+
+  &__tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-right: var(--margin-xl, 32px);
+    padding: var(--padding-xs, 8px) 0;
+    font-size: var(--font-size-base, 14px);
+    cursor: pointer;
+    transition: color 0.3s;
+
+    &:hover {
+      color: var(--primary-hover-color, #40a9ff);
+    }
+
+    &--active {
+      color: var(--primary-color, #1890ff);
+      font-weight: 500;
+    }
+
+    &--disabled {
+      color: var(--disabled-color, rgba(0, 0, 0, 0.25));
+      cursor: not-allowed;
+
+      &:hover {
+        color: var(--disabled-color, rgba(0, 0, 0, 0.25));
+      }
+    }
+  }
+
+  &__ink-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background-color: var(--primary-color, #1890ff);
+    pointer-events: none;
+  }
+
+  &__content {
+    flex: auto;
+
+    &--animated {
+      transition: margin 0.3s;
+    }
+  }
+
+  &__pane {
+    &--animated {
+      animation-duration: 0.3s;
+      animation-fill-mode: both;
+      animation-name: fadeIn;
+    }
+
+    &--active {
+      display: block;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .custom-tabs {
+    &--card {
+      .custom-tabs__nav {
+        border-bottom-color: var(--dark-border-color, #303030);
+      }
+
+      .custom-tabs__tab {
+        border-color: var(--dark-border-color, #303030);
+        background: var(--dark-bg-gray-light, #262626);
+
+        &--active {
+          background: var(--dark-component-background, #1f1f1f);
+          border-bottom-color: var(--dark-component-background, #1f1f1f);
+        }
+      }
+    }
+
+    &__nav {
+      border-bottom-color: var(--dark-border-color, #303030);
+    }
+
+    &__tab {
+      color: var(--dark-text-color-secondary, rgba(255, 255, 255, 0.65));
+
+      &:hover {
+        color: var(--primary-hover-color, #40a9ff);
+      }
+
+      &--active {
+        color: var(--primary-color, #1890ff);
+      }
+
+      &--disabled {
+        color: var(--dark-disabled-color, rgba(255, 255, 255, 0.3));
+
+        &:hover {
+          color: var(--dark-disabled-color, rgba(255, 255, 255, 0.3));
+        }
+      }
+    }
+  }
+}
