@@ -9,6 +9,7 @@ import './index.scss';
  * @param {Array} props.flights - 航班数据列表
  * @param {boolean} props.loading - 加载状态
  * @param {Function} props.onBook - 选择航班回调
+ * @param {Function} props.onLoginClick - 登录点击回调
  * @param {number} props.currentPage - 当前页码
  * @param {number} props.pageSize - 每页条数
  * @param {number} props.totalElements - 总数据量
@@ -20,6 +21,7 @@ const FlightList = ({
   flights = [],
   loading = false,
   onBook,
+  onLoginClick,
   currentPage = 0,
   pageSize = 10,
   totalElements = 0,
@@ -196,6 +198,7 @@ const FlightList = ({
           key={key}
           flight={flight}
           onSelect={onBook}
+          onLoginClick={onLoginClick}
         />
       );
     });

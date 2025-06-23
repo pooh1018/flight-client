@@ -53,7 +53,12 @@
 
 /* 表单项间距 */
 .auth-form__form .ant-form-item {
-  margin-bottom: 20px;
+  margin-bottom: 32px !important;
+}
+
+/* 表单标签字体大小 */
+.auth-form__form .ant-form-item-label > label {
+  font-size: 13px !important;
 }
 
 /* 表单项错误提示样式 */

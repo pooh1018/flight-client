@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useMemo, memo, Suspense } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useEffect, useMemo, memo, Suspense, createContext } from 'react';
+import { useLocation } from 'react-router-dom';
+// import 'react-toastify/dist/ReactToastify.css';
+import Modal from '@/components/ui/Modal/Modal';
 import Header from '@/components/Header';
 import Breadcrumb from '@/components/Breadcrumb';
 import LoginDialog from '@/pages/Login/LoginDialog';
-import { logout } from '@/services/loginApi';
-import { getUserInfo, removeAuthToken, removeUserInfo } from '@/utils/storage';
 import Loading from '@/components/Loading';
 import './MainLayout.scss';
+
+export const ModalContext = createContext({
+  showModal: () => {},
+  hideModal: () => {}
+});
 
 // 路径到标题的映射配置
 const PATH_TO_TITLE = {
@@ -58,22 +61,11 @@ const ContentLoader = ({ children }) => {
 
 const MainLayout = memo(({ children }) => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const [loginVisible, setLoginVisible] = useState(false);
-  const [user, setUser] = useState(() => {
-    const savedUser = getUserInfo();
-    return savedUser || null;
-  });
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalContent, setModalContent] = useState('');
 
   const isHomePage = location.pathname === '/home' || location.pathname === '/';
-
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
-    }
-  }, [user]);
 
   // 使用useMemo缓存面包屑项的计算结果
   const breadcrumbItems = useMemo(() => {
@@ -101,57 +93,23 @@ const MainLayout = memo(({ children }) => {
     return items;
   }, [location.pathname]);
 
-  const handleLoginClick = () => {
-    setLoginVisible(true);
+  // 移除了handleLoginClick、handleLoginSuccess和handleLogout函数
+  // 这些功能现在由useAuth Hook提供
+
+  const showModal = (title, content) => {
+    setModalTitle(title);
+    setModalContent(content);
+    setModalVisible(true);
   };
 
-  const handleLoginSuccess = (userData) => {
-    // 正确提取嵌套的用户数据
-    const userInfo = userData.user?.user || userData.user || userData;
-    setUser(userInfo);
-    setLoginVisible(false);
+  const hideModal = () => {
+    setModalVisible(false);
   };
-
-  const handleLogout = async () => {
-    try {
-      // 调用logout API
-      await logout();
-
-      // 清除所有本地状态
-      removeAuthToken();
-      removeUserInfo();
-      localStorage.removeItem('user');
-      setUser(null);
-
-      // 显示成功提示
-      toast.success('退出登录成功');
-
-      // 获取当前路径
-      const currentPath = location.pathname;
-      // 如果不在首页或航班查询页面，则跳转到首页
-      if (currentPath !== '/' && currentPath !== '/home' && currentPath !== '/flightSearch') {
-        navigate('/home');
-      } else {
-        // 如果已经在首页或航班查询页面，强制刷新页面以更新UI状态
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error('Logout failed:', error);
-      toast.error('退出登录失败，请重试');
-    }
-  };
-
-  // 使用useMemo缓存Header组件的props
-  const headerProps = useMemo(() => ({
-    user,
-    setUser,
-    onLoginClick: handleLoginClick,
-    onLogout: handleLogout
-  }), [user, setUser]);
 
   return (
     <div className="main-layout">
-      <Header {...headerProps} />
+      <ModalContext.Provider value={{ showModal, hideModal }}>
+        <Header />
       <div className="main-content">
         {!isHomePage && (
           <div className="breadcrumb-container">
@@ -166,11 +124,15 @@ const MainLayout = memo(({ children }) => {
           </Suspense>
         </div>
       </div>
-      <LoginDialog
-        visible={loginVisible}
-        onClose={() => setLoginVisible(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
+      <LoginDialog />
+      <Modal
+        visible={modalVisible}
+        title={modalTitle}
+        onClose={hideModal}
+      >
+        {modalContent}
+      </Modal>
+      </ModalContext.Provider>
     </div>
   );
 });

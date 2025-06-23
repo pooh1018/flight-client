@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from '@/components/ui';
+import { useAuthContext } from '@/contexts/AuthContext';
 import './components/AuthForm.css';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import ResetPasswordRequest from './components/ResetPasswordRequest';
 import ResetPasswordForm from './components/ResetPasswordForm';
 
-const LoginDialog = ({ visible, onClose, onLoginSuccess }) => {
+const LoginDialog = () => {
+    const { loginVisible, setLoginVisible, handleLoginSuccess } = useAuthContext();
     const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(true);
     const [showResetRequest, setShowResetRequest] = useState(false);
@@ -16,17 +18,19 @@ const LoginDialog = ({ visible, onClose, onLoginSuccess }) => {
 
     // Reset states when dialog opens
     useEffect(() => {
-        if (visible) {
+        if (loginVisible) {
             setIsLogin(true);
             setShowResetRequest(false);
             setShowResetForm(false);
             setResetEmail('');
         }
-    }, [visible]);
+    }, [loginVisible]);
 
     const handleLogin = async (credentials) => {
-        onLoginSuccess?.(credentials);
-        onClose();
+        const success = await handleLoginSuccess(credentials);
+        if (success) {
+            setLoginVisible(false);
+        }
     };
 
     const handleRegister = async (data) => {
@@ -56,8 +60,8 @@ const LoginDialog = ({ visible, onClose, onLoginSuccess }) => {
     return (
         <Modal
             title={getDialogTitle()}
-            visible={visible}
-            onClose={onClose}
+            visible={loginVisible}
+            onClose={() => setLoginVisible(false)}
             width="480px"
             className="auth-dialog"
         >

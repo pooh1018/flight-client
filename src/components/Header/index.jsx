@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getInfo } from '../../services/loginApi';
+import { useAuthContext } from '@/contexts/AuthContext';
 import './index.scss';
 
 // 自定义导航菜单项组件
@@ -85,41 +85,24 @@ const DropdownItem = ({ icon, onClick, children }) => {
   );
 };
 
-const Header = ({ onLoginClick, onLogout, user, setUser }) => {
+const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const {
+    user,
+    handleLoginClick = () => {
+      setLoginVisible(true);
+    },
+    handleLogout,
+    getRandomColor,
+    getAvatarText,
+    pendingFlight,
+    setPendingFlight,
+    setLoginVisible
+  } = useAuthContext();
+
   const [scrolled, setScrolled] = useState(false);
   const [activeIndex, setActiveIndex] = useState(location.pathname);
-  const [loading, setLoading] = useState(false);
-
-  // 页面刷新时检查登录状态
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      // 如果已经有用户信息，不需要再次获取
-      if (user) return;
-
-      setLoading(true);
-      try {
-        const response = await getInfo();
-        if (response.success) {
-          // 用户已登录，更新用户信息
-          if (setUser) {
-            // 确保用户数据格式一致，与MainLayout组件中的处理方式保持一致
-            const userData = response.data.user?.user || response.data.user || response.data;
-            setUser(userData);
-          } else {
-            console.warn('setUser function not provided to Header component');
-          }
-        }
-      } catch (error) {
-        console.error('Failed to check login status:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkLoginStatus();
-  }, [user, setUser]);
 
   // 处理滚动事件，添加滚动样式
   useEffect(() => {
@@ -142,7 +125,8 @@ const Header = ({ onLoginClick, onLogout, user, setUser }) => {
   const handleSelect = (index) => {
     setActiveIndex(index);
     if (index === '/login') {
-      onLoginClick();
+      const { state } = location;
+      handleLoginClick(state);
     } else {
       navigate(index);
     }
@@ -152,52 +136,6 @@ const Header = ({ onLoginClick, onLogout, user, setUser }) => {
     e.preventDefault();
     navigate('/home');
     setActiveIndex('/home');
-  };
-
-  // 生成随机颜色
-  const getRandomColor = () => {
-    const colors = [
-      '#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1',
-      '#13c2c2', '#eb2f96', '#fadb14', '#a0d911', '#fa541c'
-    ];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
-
-  // 获取用户头像显示文本
-  const getAvatarText = (user) => {
-    if (!user) return '';
-
-    console.log('Getting avatar text for user:', user); // 添加调试日志
-
-    // 安全地获取首字母
-    let initials = '';
-
-    // 尝试从firstName和lastName获取首字母
-    if (user.firstName && typeof user.firstName === 'string') {
-      initials += user.firstName.charAt(0).toUpperCase();
-    }
-
-    if (user.lastName && typeof user.lastName === 'string') {
-      initials += user.lastName.charAt(0).toUpperCase();
-    }
-
-    // 如果没有firstName和lastName，尝试从username获取
-    if (!initials && user.username && typeof user.username === 'string') {
-      initials = user.username.charAt(0).toUpperCase();
-    }
-
-    // 如果没有username，尝试从email获取
-    if (!initials && user.email && typeof user.email === 'string') {
-      initials = user.email.charAt(0).toUpperCase();
-    }
-
-    // 如果所有尝试都失败，使用默认值
-    if (!initials) {
-      initials = 'U';
-    }
-
-    console.log('Generated avatar text:', initials); // 添加调试日志
-    return initials;
   };
 
   return (
@@ -249,7 +187,7 @@ const Header = ({ onLoginClick, onLogout, user, setUser }) => {
                   icon={<span>🚪</span>}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onLogout();
+                    handleLogout();
                   }}
                 >
                   退出登录
@@ -262,7 +200,7 @@ const Header = ({ onLoginClick, onLogout, user, setUser }) => {
             </div>
           </CustomDropdown>
         ) : (
-          <button className="login-button" onClick={onLoginClick}>
+          <button className="login-button" onClick={() => handleLoginClick()}>
             登录
           </button>
         )}

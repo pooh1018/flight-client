@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Message } from '@/components/ui/Message';
 import { Tabs, TabPane } from '@/components/ui/Tabs';
 import FlightSearchForm from './components/FlightSearchForm';
@@ -13,7 +14,7 @@ import './index.scss';
  * 航班搜索页面
  * @returns {JSX.Element} 航班搜索页面组件
  */
-const FlightSearch = () => {
+const FlightSearch = ({ onLoginClick = () => {} }) => {
   // 搜索参数
   const [searchParams, setSearchParams] = useState(null);
   // 航班列表
@@ -337,9 +338,54 @@ const FlightSearch = () => {
    * 选择航班
    * @param {Object} flight - 选中的航班
    */
+  const [selectedFlight, setSelectedFlight] = useState(null);
+  const [loginSource, setLoginSource] = useState(null);
+
+  const handleLoginClick = (params) => {
+    setLoginSource(params.from);
+    setSelectedFlight({
+      flightId: params.flightId,
+      departure: params.departure,
+      arrival: params.arrival,
+      date: params.date,
+      price: params.price,
+      hasCabins: params.hasCabins,
+      selectedCabinId: params.selectedCabinId
+    });
+    // 触发Header组件的登录逻辑
+    if (onLoginClick) {
+      onLoginClick({
+        from: 'flightCard',
+        flight: {
+          id: params.flightId,
+          departure: params.departure,
+          arrival: params.arrival,
+          date: params.date,
+          price: params.price,
+          cabins: params.hasCabins ? [{ id: params.selectedCabinId }] : [],
+          selectedCabinId: params.selectedCabinId
+        }
+      });
+    }
+  };
+
   const handleFlightSelect = (flight) => {
-    // TODO: 处理航班选择，跳转到订票页面
-    console.log('选择航班:', flight);
+    const isLoggedIn = localStorage.getItem('token');
+    if (!isLoggedIn) {
+      handleLoginClick({
+        from: 'flightCard',
+        flightId: flight.id,
+        departure: flight.departure,
+        arrival: flight.arrival,
+        date: flight.date,
+        price: flight.price,
+        hasCabins: flight.cabins && flight.cabins.length > 0,
+        selectedCabinId: flight.selectedCabinId
+      });
+      return;
+    }
+    // 已登录则直接跳转到预定确认页面
+    navigate('/booking/confirm', { state: { flight } });
   };
 
   // 当前显示的航班列表

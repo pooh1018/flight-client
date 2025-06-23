@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Checkbox, Message, FormItem } from '@/components/ui';
+import { Form, Input, Button, Checkbox, FormItem } from '@/components/ui';
 import { encrypt } from "@/utils/rsaEncrypt";
-import { login } from "@/services/loginApi";
 import './AuthForm.css';
 
 // 邮箱验证规则
@@ -63,59 +62,32 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
       const username = values.username || '';
       const password = values.password || '';
 
-      const data = {
+      // 处理"记住我"功能
+      if (values.rememberMe) {
+        localStorage.setItem('username', username);
+        localStorage.setItem('password', password);
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('username');
+        localStorage.removeItem('password');
+        localStorage.removeItem('rememberMe');
+      }
+
+      // 准备加密的登录数据
+      const credentials = {
         email: username,
         password: encrypt(password)
       };
 
-      // 保存用户名、密码和记住我状态
-      if (values.rememberMe) {
-        localStorage.setItem('username', username);
-        localStorage.setItem('password', password); // 保存密码到localStorage
-        localStorage.setItem('rememberMe', 'true');
-      } else {
-        localStorage.removeItem('username');
-        localStorage.removeItem('password'); // 移除保存的密码
-        localStorage.removeItem('rememberMe');
-      }
-
-      const response = await login(data);
-
-      // 如果登录成功，保存token到localStorage
-      if (response.success && response.data?.token) {
-        localStorage.setItem('authToken', response.data.token);
-
-        // 显示成功消息
-        Message.success('登录成功，欢迎回来！');
-        onLogin(response.data);
-      } else {
-        const errorMessage = response?.message || '登录失败，请重试';
-        Message.error(errorMessage);
-
-        // 清空密码字段并显示错误
+      // 调用父组件传入的onLogin回调，并根据返回结果决定是否继续
+      const loginSuccess = await onLogin(credentials);
+      if (!loginSuccess) {
+        // 登录失败时不关闭对话框，只清空密码字段
         formInstance.setFieldValue('password', '');
-        // 设置错误信息
-        if (errorMessage) {
-          formInstance.setFields([{ name: 'password', errors: [errorMessage] }]);
-        }
+        return;
       }
     } catch (error) {
       console.error("登录错误:", error);
-      const errorMessage = error.response?.data?.message || error.message || '登录失败，请重试';
-
-      // 显示错误消息
-      Message.error(errorMessage);
-
-      // 设置表单错误
-      if (error.response?.status === 401) {
-        // 认证错误，清空密码并显示错误
-        formInstance.setFieldValue('password', '');
-        formInstance.setFields([{ name: 'password', errors: ['用户名或密码错误'] }]);
-      } else {
-        // 其他错误，显示在密码字段下
-        formInstance.setFields([{ name: 'password', errors: [errorMessage] }]);
-      }
-
       // 添加密码输入框抖动效果
       const passwordInput = document.querySelector('.password-input');
       if (passwordInput) {
@@ -124,6 +96,8 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
           passwordInput.classList.remove('shake-animation');
         }, 500);
       }
+      // 清空密码字段
+      formInstance.setFieldValue('password', '');
     } finally {
       setLoading(false);
     }
