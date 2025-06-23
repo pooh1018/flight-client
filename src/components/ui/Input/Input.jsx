@@ -19,6 +19,7 @@ const Input = forwardRef(({
   addonAfter = null,
   allowClear = false,
   className = '',
+  validateTrigger, // 解构但不传递给DOM
   ...props
 }, ref) => {
   const [inputValue, setInputValue] = useState(defaultValue || '');

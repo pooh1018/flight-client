@@ -222,7 +222,7 @@ const FlightList = ({
                 showQuickJumper
                 showTotal={total => `共 ${total} 条`}
                 disabled={loading}
-                responsive
+                responsive="true"
                 hideOnSinglePage={true}
               />
             </div>

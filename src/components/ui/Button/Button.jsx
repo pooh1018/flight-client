@@ -12,7 +12,8 @@ const Button = ({
   onClick,
   className = '',
   htmlType = 'button',
-  ...props
+  block, // 解构但不使用，防止传递给DOM
+  ...restProps // 只传递合法的DOM属性
 }) => {
   const baseClass = 'custom-button';
   const classes = [
@@ -35,7 +36,7 @@ const Button = ({
       className={classes}
       disabled={disabled}
       onClick={handleClick}
-      {...props}
+      {...restProps}
     >
       {loading && (
         <span className={`${baseClass}__loading-icon`}>

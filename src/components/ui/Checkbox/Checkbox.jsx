@@ -9,7 +9,8 @@ const Checkbox = ({
   onChange,
   className = '',
   children,
-  ...props
+  valuePropName, // 解构但不使用，防止传递给DOM
+  ...restProps // 只传递合法的DOM属性
 }) => {
   const [isChecked, setIsChecked] = useState(defaultChecked);
   const baseClass = 'custom-checkbox';
@@ -44,7 +45,7 @@ const Checkbox = ({
           checked={controlledChecked}
           disabled={disabled}
           onChange={handleChange}
-          {...props}
+          {...restProps}
         />
         <span className={`${baseClass}__inner`}></span>
       </span>

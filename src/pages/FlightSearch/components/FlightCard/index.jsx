@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Button, Tag, Tooltip, Collapse } from '@/components/ui';
+import { Card, Button, Tag, Tooltip, Collapse, Modal } from '@/components/ui';
 import { getAirlineByCode } from '@/config';
 import { formatPrice, formatTime, formatDuration } from '@/utils/formatters';
 import './index.scss';
@@ -11,11 +11,12 @@ import './index.scss';
  * @param {Function} props.onSelect - 选择航班回调
  * @returns {JSX.Element} 航班卡片组件
  */
-const FlightCard = ({ flight, onSelect, selectedCabin }) => {
+const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
   // 添加状态来跟踪是否展开舱位选择面板
   const [showCabins, setShowCabins] = useState(false);
   // 当前选中的舱位ID - 初始化为props中的selectedCabin.id
   const [selectedCabinId, setSelectedCabinId] = useState(selectedCabin?.id || null);
+
   const {
     id,
     airline,
@@ -97,8 +98,8 @@ const FlightCard = ({ flight, onSelect, selectedCabin }) => {
           {/* 出发信息 */}
           <div className="flight-point departure">
           <div className="time">{departureTime ? formatTime(departureTime) : '未知'}</div>
-          <div className="city">{departureCity || '未知城市'}</div>
-          <div className="airport">{departureAirport || '未知机场'}</div>
+          {/*<div className="city">{departureCity || '未知城市'}</div>*/}
+          {/*<div className="airport">{departureAirport || '未知机场'}</div>*/}
         </div>
 
         {/* 航班信息 */}
@@ -114,8 +115,8 @@ const FlightCard = ({ flight, onSelect, selectedCabin }) => {
         {/* 到达信息 */}
         <div className="flight-point arrival">
           <div className="time">{arrivalTime ? formatTime(arrivalTime) : '未知'}</div>
-          <div className="city">{arrivalCity || '未知城市'}</div>
-          <div className="airport">{arrivalAirport || '未知机场'}</div>
+          {/*<div className="city">{arrivalCity || '未知城市'}</div>*/}
+          {/*<div className="airport">{arrivalAirport || '未知机场'}</div>*/}
         </div>
       </div>
 
@@ -223,19 +224,24 @@ const FlightCard = ({ flight, onSelect, selectedCabin }) => {
                 // 检查登录状态
                 const isLoggedIn = localStorage.getItem('token');
                 if (!isLoggedIn) {
-                  // 弹出登录模态框
-                  Modal.confirm({
-                    title: '请先登录',
-                    content: '需要登录后才能预定航班',
-                    okText: '去登录',
-                    cancelText: '取消',
-                    onOk: () => {
-                      // 跳转到登录页
-                      window.location.href = '/login?redirect=/flight/search';
-                    }
+                  // 调用Header的登录方法，并标记来自FlightCard
+                  onLoginClick?.({
+                    from: 'flightCard',
+                    flightId: flight.id,
+                    hasCabins: flight.cabins && flight.cabins.length > 0,
+                    selectedCabinId
                   });
                 } else {
-                  // 已登录，跳转到预定确认页
+                  // 检查是否选择了仓位
+                  if (flight.cabins && flight.cabins.length > 0 && !selectedCabinId) {
+                    Modal.warning({
+                      title: '请选择舱位',
+                      content: '请先选择舱位后再进行预定',
+                      okText: '确定'
+                    });
+                    return;
+                  }
+                  // 已登录且选择了仓位，跳转到预定确认页
                   window.location.href = `/booking/confirm?flightId=${flight.id}`;
                 }
               }}

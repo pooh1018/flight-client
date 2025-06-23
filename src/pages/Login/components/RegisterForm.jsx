@@ -94,7 +94,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
     } catch (error) {
       console.error('Error loading saved form data:', error);
     }
-  }, [form]);
+  }, []); // 移除form依赖，因为form实例在组件生命周期内是稳定的
 
   // 保存表单数据到 localStorage（除了密码字段）
   const saveFormData = (values) => {

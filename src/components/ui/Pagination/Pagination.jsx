@@ -18,7 +18,8 @@ const Pagination = ({
   disabled = false,
   className = '',
   style = {},
-  ...props
+  hideOnSinglePage, // 解构但不使用，防止传递给DOM
+  ...restProps // 只传递合法的DOM属性
 }) => {
   const [currentPage, setCurrentPage] = useState(current || defaultCurrent);
   const [currentPageSize, setCurrentPageSize] = useState(pageSize || defaultPageSize);
@@ -268,7 +269,8 @@ const Pagination = ({
   };
 
   return (
-    <div className={classes} style={style} {...props}>
+    <div className={classes} style={style} {...restProps}>
+>
       {/* 显示总数 */}
       {showTotal && (
         <div className={`${baseClass}__total`}>
