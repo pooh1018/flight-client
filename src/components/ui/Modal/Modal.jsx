@@ -1,13 +1,19 @@
 import React from 'react';
+import { Button } from '@/components/ui';
 import './Modal.scss';
 
 const Modal = ({
   visible,
   onClose,
+  onConfirm,
+  onCancel,
   title,
   children,
   width = '500px',
-  className = ''
+  className = '',
+  showFooter = true,
+  confirmText = '确定',
+  cancelText = '取消'
 }) => {
   if (!visible) return null;
 
@@ -26,11 +32,25 @@ const Modal = ({
       >
         <div className="modal-header">
           <h3 className="modal-title">{title}</h3>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <Button className="modal-close" onClick={onClose}>×</Button>
         </div>
         <div className="modal-content">
           {children}
         </div>
+        {showFooter && (
+          <div className="modal-footer">
+            {onCancel && (
+              <Button className="modal-btn modal-btn-cancel" onClick={onCancel}>
+                {cancelText}
+              </Button>
+            )}
+            {onConfirm && (
+              <Button className="modal-btn modal-btn-confirm" onClick={onConfirm}>
+                {confirmText}
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

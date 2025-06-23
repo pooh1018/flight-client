@@ -1,51 +1,45 @@
 .booking-confirmation {
-  max-width: 800px;
-  margin: 24px auto;
-  padding: 0 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 20px;
 
   .confirmation-card {
-    padding: 24px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
 
-    .confirmation-title {
-      text-align: center;
-      margin-bottom: 0;
+  .confirmation-content {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .confirmation-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .confirmation-details {
+    margin-bottom: 30px;
+
+    h2 {
+      font-size: 20px;
+      color: #4caf50;
+      margin-bottom: 15px;
     }
 
-    .flight-info {
-      width: 100%;
-
-      .flight-header {
-        margin-bottom: 16px;
-      }
-
-      .flight-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 8px;
-
-        .price {
-          color: #f5222d;
-          font-weight: bold;
-        }
-      }
-    }
-
-    .passenger-info,
-    .payment-info {
-      margin: 24px 0;
-    }
-
-    .confirmation-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 24px;
+    p {
+      margin: 10px 0;
+      color: #666;
     }
   }
 
-  .loading-container,
-  .error-container {
-    text-align: center;
-    padding: 48px;
-    font-size: 16px;
+  .confirmation-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
   }
 }

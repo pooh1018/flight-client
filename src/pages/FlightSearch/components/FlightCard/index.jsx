@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import useModal from '@/hooks/useModal';
+import { useNavigate } from 'react-router-dom';
 import { Card, Button, Tag, Tooltip, Collapse } from '@/components/ui';
-import Modal from '@/components/ui/Modal/Modal';
 import { getAirlineByCode } from '@/config';
 import { formatPrice, formatTime, formatDuration } from '@/utils/formatters';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useModal } from '@/contexts/ModalContext';
+
 import './index.scss';
 
 /**
@@ -14,12 +16,15 @@ import './index.scss';
  * @returns {JSX.Element} 航班卡片组件
  */
 const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
+
+  const navigate = useNavigate();
   // 添加状态来跟踪是否展开舱位选择面板
   const [showCabins, setShowCabins] = useState(false);
   // 当前选中的舱位ID和舱位信息
   const [selectedCabinId, setSelectedCabinId] = useState(selectedCabin?.id || null);
   const [selectedCabinInfo, setSelectedCabinInfo] = useState(selectedCabin || null);
   const { showModal } = useModal();
+  const { user } = useAuthContext();
 
   const {
     id,
@@ -226,8 +231,8 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
               disabled={seatsAvailable !== undefined && seatsAvailable === 0}
               onClick={() => {
                 // 检查登录状态
-                const isLoggedIn = localStorage.getItem('token');
-                if (!isLoggedIn) {
+                console.log(user);
+                if (!user) {
                   // 调用Header的登录方法，并标记来自FlightCard
                   if (onLoginClick) {
                     onLoginClick({
@@ -248,16 +253,34 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
                       }
                     });
                   } else {
-                    showModal('登录功能不可用', '请刷新页面后重试');
+                    showModal(
+                        '登录功能不可用',
+                        '请刷新页面后重试',
+                        {
+                            onConfirm: () => console.log('确定操作'),
+                            onCancel: () => console.log('取消操作'),
+                            confirmText: '确定',
+                            cancelText: '取消',
+                            width: '400px'
+                        });
                   }
                 } else {
                   // 检查是否选择了仓位
                   if (flight.cabins && flight.cabins.length > 0 && !selectedCabinId) {
-                    showModal('请选择舱位', '请先选择舱位后再进行预定');
+                    showModal(
+                        '请选择舱位',
+                        '请先选择舱位后再进行预定',
+                        {
+                            onConfirm: () => console.log('确定操作'),
+                            onCancel: () => console.log('取消操作'),
+                            confirmText: '确定',
+                            cancelText: '取消',
+                            width: '400px'
+                        });
                     return;
                   }
                   // 已登录且选择了仓位，跳转到预定确认页
-                  navigate('/booking/confirm', {
+                  navigate('/booking/success', {
                     state: {
                       flight: {
                         id: flight.id,

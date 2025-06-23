@@ -9,6 +9,7 @@ const LoginDialog = lazy(() => import('../pages/Login/LoginDialog'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage404'));
 const FlightList = lazy(() => import('../pages/FlightSearch/components/FlightList'));
 const SelectTest = lazy(() => import('../components/ui/Select/SelectTest'));
+const ModalExample = lazy(() => import('../components/ui/Modal/ModalExample'));
 const BookingConfirmation = lazy(() => import('../pages/Booking/BookingConfirmation'));
 const BookingSuccess = lazy(() => import('../pages/Booking/BookingSuccess'));
 
@@ -55,6 +56,11 @@ const routes = [
         name: 'selectTest',
         path: '/select-test',
         element: lazyLoad(SelectTest)
+    },
+    {
+        name: 'modaltest',
+        path: '/modal-test',
+        element: lazyLoad(ModalExample)
     },
     {
         name: 'bookingConfirmation',

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Message } from '@/components/ui/Message';
 import { Tabs, TabPane } from '@/components/ui/Tabs';
 import FlightSearchForm from './components/FlightSearchForm';

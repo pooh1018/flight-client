@@ -36,7 +36,7 @@ export default function useAuth() {
       }
     } catch (error) {
       console.error('Login failed:', error);
-      Message.error('登录失败，请重试');
+      toast.error('登录失败，请重试');
       return false;
     }
   };

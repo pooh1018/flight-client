@@ -1,17 +1,11 @@
-import React, { useState, useEffect, useMemo, memo, Suspense, createContext } from 'react';
+import React, { useState, useEffect, useMemo, memo, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
-// import 'react-toastify/dist/ReactToastify.css';
-import Modal from '@/components/ui/Modal/Modal';
 import Header from '@/components/Header';
 import Breadcrumb from '@/components/Breadcrumb';
 import LoginDialog from '@/pages/Login/LoginDialog';
 import Loading from '@/components/Loading';
+import { ModalProvider } from '@/contexts/ModalContext';
 import './MainLayout.scss';
-
-export const ModalContext = createContext({
-  showModal: () => {},
-  hideModal: () => {}
-});
 
 // 路径到标题的映射配置
 const PATH_TO_TITLE = {
@@ -61,10 +55,6 @@ const ContentLoader = ({ children }) => {
 
 const MainLayout = memo(({ children }) => {
   const location = useLocation();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalContent, setModalContent] = useState('');
-
   const isHomePage = location.pathname === '/home' || location.pathname === '/';
 
   // 使用useMemo缓存面包屑项的计算结果
@@ -96,43 +86,26 @@ const MainLayout = memo(({ children }) => {
   // 移除了handleLoginClick、handleLoginSuccess和handleLogout函数
   // 这些功能现在由useAuth Hook提供
 
-  const showModal = (title, content) => {
-    setModalTitle(title);
-    setModalContent(content);
-    setModalVisible(true);
-  };
-
-  const hideModal = () => {
-    setModalVisible(false);
-  };
-
   return (
     <div className="main-layout">
-      <ModalContext.Provider value={{ showModal, hideModal }}>
+      <ModalProvider>
         <Header />
-      <div className="main-content">
-        {!isHomePage && (
-          <div className="breadcrumb-container">
-            <Breadcrumb items={breadcrumbItems} />
+        <div className="main-content">
+          {!isHomePage && (
+            <div className="breadcrumb-container">
+              <Breadcrumb items={breadcrumbItems} />
+            </div>
+          )}
+          <div className="content-container">
+            <Suspense fallback={<Loading />}>
+              <ContentLoader>
+                {children}
+              </ContentLoader>
+            </Suspense>
           </div>
-        )}
-        <div className="content-container">
-          <Suspense fallback={<Loading />}>
-            <ContentLoader>
-              {children}
-            </ContentLoader>
-          </Suspense>
         </div>
-      </div>
-      <LoginDialog />
-      <Modal
-        visible={modalVisible}
-        title={modalTitle}
-        onClose={hideModal}
-      >
-        {modalContent}
-      </Modal>
-      </ModalContext.Provider>
+        <LoginDialog />
+      </ModalProvider>
     </div>
   );
 });
