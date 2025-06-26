@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Tag, Tooltip, Collapse } from '@/components/ui';
-import { getAirlineByCode } from '@/config';
+import {AIRLINE_LOGO_PATH, getAirlineByCode} from '@/config';
 import {formatPrice, formatTime, formatDuration, formatDate} from '@/utils/formatters';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useModal } from '@/contexts/ModalContext';
@@ -45,7 +45,7 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
   } = flight;
 
   // 获取航空公司信息
-  const airlineInfo = airline && airline.code ? getAirlineByCode(airline.code) : null;
+  const airlineInfo = airline && getAirlineByCode(airline.code);
 
   // 计算折扣价格
   const discountedPrice = price && discount ? price * (1 - discount) : price;
@@ -85,10 +85,22 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
     <Card className="flight-card">
         {/* 航空公司信息 - 右对齐 */}
         <div className="airline-info" style={{ justifyContent: 'flex-end' }}>
-            {airlineInfo?.logo && (
+            {airlineInfo?.logoPath && (
                 <img
-                    src={airlineInfo.logo}
+                    src={airlineInfo.logoPath}
                     alt={airlineInfo.name}
+                    className="airline-logo"
+                    style={{
+                        width: '48px',
+                        height: '48px',
+                        objectFit: 'contain'
+                    }}
+                />
+            )}
+            {!airlineInfo && (
+                <img
+                    src={`${AIRLINE_LOGO_PATH}default.png`}
+                    alt={'未知航空公司'}
                     className="airline-logo"
                     style={{
                         width: '48px',

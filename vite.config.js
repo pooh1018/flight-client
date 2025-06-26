@@ -21,7 +21,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    port: 8011, // 端口
+    port: 80, // 端口
     open: true,
     proxy: {
       '/api': {
@@ -33,7 +33,7 @@ export default defineConfig({
           'Accept-Charset': 'utf-8',
           'Content-Type': 'application/json; charset=utf-8'
         },
-        rewrite: (path) => path.replace(/^\/api/, '')
+        // rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   },

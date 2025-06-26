@@ -95,7 +95,7 @@ const FlightItem = ({ flight, onSelect }) => {
         <div className="airline-info">
           <div className="airline-logo">
             <img
-              src={`${AIRLINE_LOGO_PATH}${airline.code.toLowerCase()}.png`}
+              src={airline.logoPath}
               alt={airline.name}
               onError={(e) => {
                 e.target.onerror = null;

@@ -1,9 +1,6 @@
 {
   "name": "flight-client",
   "version": "1.0.0",
-  "sass": {
-    "quietDeps": true
-  },
   "scripts": {
     "dev": "vite --mode development",
     "prod": "vite --mode production",

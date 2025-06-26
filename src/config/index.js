@@ -89,7 +89,7 @@ export const AIRLINES = [
   { code: 'AA', name: '美国航空', logo: 'src/assets/images/airlines/aa.png' },
   { code: 'DL', name: '达美航空', logo: 'src/assets/images/airlines/dl.png' },
   { code: 'AC', name: '加拿大航空', logo: 'src/assets/images/airlines/ac.png' },
-  { code: '99', name: '某大航空', logo: 'src/assets/images/airlines/99.png' }
+  { code: '99', name: '未知航空公司', logo: 'src/assets/images/airlines/default.png' }
 ];
 
 /**
@@ -98,7 +98,13 @@ export const AIRLINES = [
  * @returns {Object|null} 航空公司信息
  */
 export const getAirlineByCode = (code) => {
-  return AIRLINES.find(airline => airline.code === code) || null;
+  const airline = AIRLINES.find(airline => airline.code === code);
+  if (!airline) return null;
+
+  return {
+    ...airline,
+    logoPath: `${AIRLINE_LOGO_PATH}${airline.code.toLowerCase()}.png`
+  };
 };
 
 /**
@@ -182,6 +188,11 @@ export const STOP_OPTIONS = [
   { value: '1', label: '1次经停', description: '1次中转' },
   { value: '2+', label: '多次经停', description: '2次或更多中转' }
 ];
+
+/**
+ * 航空公司logo路径
+ */
+export const AIRLINE_LOGO_PATH = '/assets/images/airlines/';
 
 /**
  * API基础URL
