@@ -1,0 +1,174 @@
+.booking-detail {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+
+  .booking-detail-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+
+    h1 {
+      margin-bottom: 24px;
+      font-size: 24px;
+      font-weight: 500;
+    }
+
+    .flight-info {
+      margin-bottom: 32px;
+
+      h2 {
+        font-size: 18px;
+        margin-bottom: 16px;
+      }
+
+      .flight-details {
+        background: #f5f5f5;
+        padding: 16px;
+        border-radius: 4px;
+
+        p {
+          margin-bottom: 8px;
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+
+    .booking-form {
+      .ant-form-item {
+        margin-bottom: 24px;
+      }
+
+      .ant-select {
+        width: 100%;
+
+        :global {
+          .ant-select:not(.ant-select-disabled) {
+            .ant-select-selector {
+              padding-right: 40px !important;
+              position: relative;
+
+              .ant-select-arrow {
+                right: 12px !important;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                margin: 0 !important;
+              }
+            }
+
+            &.ant-select-multiple {
+              .ant-select-selector {
+                padding-right: 40px !important;
+
+                .ant-select-selection-overflow {
+                  max-width: calc(100% - 32px);
+                  padding-right: 8px;
+                }
+
+                .ant-select-selection-search {
+                  margin-right: 8px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // 乘客选择下拉框样式
+      .passenger-option {
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        transition: all 0.3s ease;
+
+        .passenger-info {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          .passenger-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+          }
+
+          .passenger-details {
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+
+            .separator {
+              color: #ddd;
+              margin: 0 6px;
+            }
+          }
+        }
+
+        &:hover {
+          background-color: #f5f5f5;
+        }
+      }
+
+      // 自定义下拉框样式
+      :global {
+        .ant-select-dropdown {
+          padding: 8px;
+          border-radius: 8px;
+
+          .ant-select-item {
+            border-radius: 6px;
+            margin: 6px 0;
+            padding: 0;
+
+            &-option-content {
+              white-space: normal;
+              line-height: 1.4;
+            }
+
+            &-option-selected {
+              background-color: #e6f7ff;
+
+              .passenger-name {
+                color: #1890ff;
+              }
+            }
+          }
+        }
+
+        .ant-select-selection-item {
+          padding: 4px 12px !important;
+          border-radius: 6px !important;
+          background: #f0f0f0 !important;
+          border: 1px solid #d9d9d9 !important;
+          margin: 4px !important;
+          height: auto !important;
+          line-height: 1.4 !important;
+
+          &:hover {
+            background: #e6f7ff !important;
+            border-color: #1890ff !important;
+          }
+        }
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 32px;
+
+        button {
+          min-width: 120px;
+
+          &:not(:first-child) {
+            margin-left: 16px;
+          }
+        }
+      }
+    }
+  }
+}
