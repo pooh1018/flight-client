@@ -33,6 +33,7 @@ const Select = ({
   children,
   filterable,  // 显式声明但不使用，这样它就不会传递给 DOM
   loading = false,
+  maxTagCount, // 显式声明但不使用，这样它就不会传递给 DOM
   ...restProps
 }) => {
   // 过滤掉loading属性，防止传递到DOM

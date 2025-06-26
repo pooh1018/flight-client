@@ -53,7 +53,7 @@ const Button = ({
 
 Button.propTypes = {
   children: PropTypes.node,
-  type: PropTypes.oneOf(['default', 'primary', 'ghost', 'dashed', 'link', 'text']),
+  type: PropTypes.oneOf(['default', 'primary', 'ghost', 'dashed', 'link', 'text', 'danger']),
   size: PropTypes.oneOf(['small', 'middle', 'large']),
   disabled: PropTypes.bool,
   loading: PropTypes.bool,

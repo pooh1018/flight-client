@@ -7,7 +7,10 @@ export const fetchAirportData = async () => {
     return response.data.map(airport => ({
       key: airport.airportId, // 使用 airportId 作为唯一 key
       value: airport.airportId,
-      label: `${airport.city} (${airport.airportCode}) - ${airport.country}`
+      label: `${airport.city} (${airport.airportCode}) - ${airport.country}`,
+      city: airport.city,
+      airportName: airport.airportName,
+      country: airport.country
     }));
   } catch (error) {
     console.error('Failed to fetch airports:', error);
@@ -124,10 +127,41 @@ export const PAYMENT_METHODS = [
 export const ORDER_STATUS = [
   { value: 'pending', label: '待支付', color: 'warning' },
   { value: 'paid', label: '已支付', color: 'success' },
-  { value: 'confirmed', label: '已确认', color: 'success' },
+  { value: 'confirmed', label: '预定成功', color: 'success' },
   { value: 'cancelled', label: '已取消', color: 'danger' },
   { value: 'refunded', label: '已退款', color: 'info' },
   { value: 'completed', label: '已完成', color: 'success' }
+];
+
+/**
+ * 国家/地区选项
+ */
+export const COUNTRY_OPTIONS = [
+  { label: '中国', value: 'China' },
+  { label: '美国', value: 'USA' },
+  { label: '英国', value: 'UK' },
+  { label: '日本', value: 'Japan' },
+  { label: '韩国', value: 'South Korea' },
+  { label: '新加坡', value: 'Singapore' },
+  { label: '马来西亚', value: 'Malaysia' },
+  { label: '泰国', value: 'Thailand' },
+  { label: '越南', value: 'Vietnam' },
+  { label: '印度', value: 'India' },
+  { label: '澳大利亚', value: 'Australia' },
+  { label: '新西兰', value: 'New Zealand' },
+  { label: '加拿大', value: 'Canada' },
+  { label: '法国', value: 'France' },
+  { label: '德国', value: 'Germany' },
+  { label: '意大利', value: 'Italy' },
+  { label: '西班牙', value: 'Spain' },
+  { label: '葡萄牙', value: 'Portugal' },
+  { label: '俄罗斯', value: 'Russia' },
+  { label: '巴西', value: 'Brazil' },
+  { label: '墨西哥', value: 'Mexico' },
+  { label: '阿根廷', value: 'Argentina' },
+  { label: '南非', value: 'South Africa' },
+  { label: '埃及', value: 'Egypt' },
+  { label: '阿联酋', value: 'United Arab Emirates' }
 ];
 
 /**

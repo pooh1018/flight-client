@@ -158,7 +158,16 @@ const FlightSearchForm = ({ onSearch }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (onSearch) {
-      onSearch(formData);
+      // 从cities中查找选中的出发和到达城市
+      const selectedCities = {
+        from: cities.find(city => city.key === formData.from),
+        to: cities.find(city => city.key === formData.to)
+      };
+
+      onSearch({
+        ...formData,
+        cities: selectedCities // 只传递选中的城市数据
+      });
     }
   };
 
@@ -182,29 +191,29 @@ const FlightSearchForm = ({ onSearch }) => {
           className={`tab-button ${formData.tripType === 'oneway' ? 'active' : ''}`}
           onClick={() => handleChange('tripType', 'oneway')}
         >
-          One Way
+          单程
         </button>
         <button
           className={`tab-button ${formData.tripType === 'roundtrip' ? 'active' : ''}`}
           onClick={() => handleChange('tripType', 'roundtrip')}
         >
-          Round Trip
+          往返
         </button>
       </div>
 
       <Form onSubmit={handleSubmit} layout="vertical">
         <div className="form-row">
           <div className="form-field">
-            <label className="form-label required">From</label>
+            <label className="form-label required">出发地</label>
             <Select
               value={formData.from}
               onChange={(value) => handleChange('from', value)}
-              placeholder="Select departure city"
+              placeholder="请选择出发城市"
               options={cities}
               showSearch
-              noMatchText="No matching departure cities found"
+              noMatchText="未找到匹配的出发城市"
             />
-            {!formData.from && <div className="error-message">Please select departure city</div>}
+            {!formData.from && <div className="error-message">请选择出发城市</div>}
           </div>
 
           <div className="swap-button-container">
@@ -212,32 +221,32 @@ const FlightSearchForm = ({ onSearch }) => {
               type="button"
               className="swap-button"
               onClick={handleSwapCities}
-              title="Swap cities"
+              title="交换城市"
             >
               ⇄
             </button>
           </div>
 
           <div className="form-field">
-            <label className="form-label required">To</label>
+            <label className="form-label required">目的地</label>
             <Select
               value={formData.to}
               onChange={(value) => handleChange('to', value)}
-              placeholder="Select destination city"
+              placeholder="请选择目的城市"
               options={cities}
               showSearch
-              noMatchText="No matching destination cities found"
+              noMatchText="未找到匹配的目的城市"
               loading={loading}
             />
-            {!formData.to && <div className="error-message">Please select destination city</div>}
+            {!formData.to && <div className="error-message">请选择目的城市</div>}
           </div>
         </div>
 
         <div className="form-row">
           <FormItem
-            label="Departure Date"
+            label="出发日期"
             required
-            error={!formData.departureDate ? 'Please select departure date' : ''}
+            error={!formData.departureDate ? '请选择出发日期' : ''}
             className="form-item-date"
           >
             <DatePicker
@@ -274,7 +283,7 @@ const FlightSearchForm = ({ onSearch }) => {
 
         <div className="form-row">
           <FormItem
-            label="Passengers"
+            label="乘客"
             required
             className="form-item-passengers"
           >
@@ -300,7 +309,7 @@ const FlightSearchForm = ({ onSearch }) => {
           </FormItem>
 
           <div className="form-field">
-            <label className="form-label required">Class</label>
+            <label className="form-label required">舱位</label>
             <Select
               value={formData.class}
               onChange={(value) => handleChange('class', value)}
@@ -320,7 +329,7 @@ const FlightSearchForm = ({ onSearch }) => {
             className="search-button"
             disabled={!validateForm()}
           >
-            Search Flights
+            搜索航班
           </Button>
         </FormItem>
       </Form>

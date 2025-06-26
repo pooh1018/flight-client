@@ -3,16 +3,25 @@ import service from "@/services/http";
 // 添加乘客
 export function addPassenger(passengerData) {
     return service({
-        url: 'passenger/add',
+        url: 'passengers/add',
         method: 'post',
         data: passengerData
     })
 }
 
 // 获取乘客列表
-export function getPassengers() {
+export function getPassengersByUserId() {
     return service({
-        url: 'passenger/list',
+        url: 'passengers/listByUserId',
         method: 'get'
     })
 }
+
+// 删除乘客
+export function deletePassenger(passengerId) {
+    return service({
+        url: `passengers/delete/${passengerId}`,
+        method: 'delete'
+    })
+}
+

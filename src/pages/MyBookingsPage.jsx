@@ -37,7 +37,7 @@ function MyBookingsPage() {
             width: 100,
             render: (data) => {
                 const statusMap = {
-                    'confirmed': '已确认',
+                    'confirmed': '预定成功',
                     'cancelled': '已取消',
                     'completed': '已完成'
                 };

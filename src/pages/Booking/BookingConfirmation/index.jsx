@@ -19,7 +19,7 @@ const BookingConfirmation = () => {
           <div className="confirmation-actions">
             <Button
               type="primary"
-              onClick={() => navigate('/booking/history')}
+              onClick={() => navigate('/my-bookings')}
             >
               查看预订历史
             </Button>

@@ -270,7 +270,6 @@ const Pagination = ({
 
   return (
     <div className={classes} style={style} {...restProps}>
->
       {/* 显示总数 */}
       {showTotal && (
         <div className={`${baseClass}__total`}>

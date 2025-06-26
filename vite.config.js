@@ -25,8 +25,8 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8001',
-        // target: 'http://47.109.24.42:8001',
+        // target: 'http://localhost:8001',
+        target: 'http://47.109.24.42:8001',
         changeOrigin: true,
         // secure: true,
         headers: {

@@ -200,7 +200,10 @@ const Header = () => {
             </div>
           </CustomDropdown>
         ) : (
-          <button className="login-button" onClick={() => handleLoginClick()}>
+          <button 
+            className="login-button" 
+            onClick={() => handleLoginClick({ from: location.pathname })}
+          >
             登录
           </button>
         )}

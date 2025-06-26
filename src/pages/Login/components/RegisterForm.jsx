@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Select, Message } from '@/components/ui';
 import { encrypt } from "@/utils/rsaEncrypt";
 import { register } from '@/services/loginApi';
+import { COUNTRY_OPTIONS } from '@/config';
 import './AuthForm.css';
 
 // 邮箱验证规则
@@ -147,13 +148,6 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
     }
   };
 
-  const countryOptions = [
-    { label: '中国', value: 'China' },
-    { label: '美国', value: 'USA' },
-    { label: '英国', value: 'UK' },
-    { label: '日本', value: 'Japan' }
-  ];
-
   return (
     <div className="auth-form">
       <h2 className="auth-form__title">注册</h2>
@@ -253,7 +247,8 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
         >
           <Select
             placeholder="请选择国家/地区"
-            options={countryOptions}
+            options={COUNTRY_OPTIONS}
+            showSearch
           />
         </Form.Item>
 

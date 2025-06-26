@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Tag, Tooltip, Collapse } from '@/components/ui';
 import { getAirlineByCode } from '@/config';
-import { formatPrice, formatTime, formatDuration } from '@/utils/formatters';
+import {formatPrice, formatTime, formatDuration, formatDate} from '@/utils/formatters';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useModal } from '@/contexts/ModalContext';
-
 import './index.scss';
 
 /**
@@ -107,8 +106,8 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
           {/* 出发信息 */}
           <div className="flight-point departure">
           <div className="time">{departureTime ? formatTime(departureTime) : '未知'}</div>
-          {/*<div className="city">{departureCity || '未知城市'}</div>*/}
-          {/*<div className="airport">{departureAirport || '未知机场'}</div>*/}
+          <div className="city">{departureCity || '未知城市'}</div>
+          <div className="airport">{departureAirport || '未知机场'}</div>
         </div>
 
         {/* 航班信息 */}
@@ -124,8 +123,8 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
         {/* 到达信息 */}
         <div className="flight-point arrival">
           <div className="time">{arrivalTime ? formatTime(arrivalTime) : '未知'}</div>
-          {/*<div className="city">{arrivalCity || '未知城市'}</div>*/}
-          {/*<div className="airport">{arrivalAirport || '未知机场'}</div>*/}
+          <div className="city">{arrivalCity || '未知城市'}</div>
+          <div className="airport">{arrivalAirport || '未知机场'}</div>
         </div>
       </div>
 
@@ -237,31 +236,31 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
                   if (onLoginClick) {
                     onLoginClick({
                       from: 'flightCard',
-                      flight: {
-                        id: flight.id,
+                        flightInfo: {
+                        flightId: flight.id,
                         departure: flight.departureCity,
                         arrival: flight.arrivalCity,
                         date: flight.departureTime,
                         price: flight.price,
                         hasCabins: flight.cabins && flight.cabins.length > 0,
+                        CabinsClass: selectedCabinInfo.CabinsClass,
                         selectedCabinId,
                         airline: flight.airline,
                         flightNumber: flight.flightNumber,
-                        departureTime: flight.departureTime,
-                        arrivalTime: flight.arrivalTime,
+                        departureTime: flight.departureTime ? formatDate(flight.departureTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
+                        arrivalTime: flight.arrivalTime ? formatDate(flight.arrivalTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
                         duration: flight.duration
                       }
                     });
                   } else {
                     showModal(
-                        '登录功能不可用',
-                        '请刷新页面后重试',
+                        '尚未登录',
+                        '请登录后预定',
                         {
-                            onConfirm: () => console.log('确定操作'),
-                            onCancel: () => console.log('取消操作'),
+                            onConfirm: () => {},
                             confirmText: '确定',
-                            cancelText: '取消',
-                            width: '400px'
+                            width: 400,
+                            closable: true
                         });
                   }
                 } else {
@@ -271,30 +270,32 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
                         '请选择舱位',
                         '请先选择舱位后再进行预定',
                         {
-                            onConfirm: () => console.log('确定操作'),
-                            onCancel: () => console.log('取消操作'),
-                            confirmText: '确定',
-                            cancelText: '取消',
-                            width: '400px'
+                            onConfirm: () => {}, // 使用 onConfirm 而不是 onCancel
+                            confirmText: '确定', // 使用 confirmText 而不是 cancelText
+                            width: 400,
+                            maskClosable: true, // 允许点击遮罩层关闭
+                            closable: true // 显示关闭按钮
                         });
                     return;
                   }
+
                   // 已登录且选择了仓位，跳转到预定确认页
-                  navigate('/booking/success', {
+                  navigate('/my-bookings/detail', {
                     state: {
-                      flight: {
-                        id: flight.id,
-                        departure: flight.departureCity,
-                        arrival: flight.arrivalCity,
-                        date: flight.departureTime,
-                        price: flight.price,
-                        selectedCabinId,
-                        airline: flight.airline,
-                        flightNumber: flight.flightNumber,
-                        departureTime: flight.departureTime,
-                        arrivalTime: flight.arrivalTime,
-                        duration: flight.duration
-                      }
+                        flightInfo: {
+                            flightId: flight.id,
+                            departure: flight.departureCity,
+                            arrival: flight.arrivalCity,
+                            date: flight.departureTime,
+                            price: flight.price,
+                            hasCabins: flight.cabins && flight.cabins.length > 0,
+                            selectedCabinId,
+                            airline: flight.airline,
+                            flightNumber: flight.flightNumber,
+                            departureTime: flight.departureTime ? formatDate(flight.departureTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
+                            arrivalTime: flight.arrivalTime ? formatDate(flight.arrivalTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
+                            duration: flight.duration
+                        }
                     }
                   });
                 }

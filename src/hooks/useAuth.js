@@ -1,15 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getInfo, login, logout } from '../services/loginApi';
-import Message from '../components/ui/Message/Message';
+import { Message } from '@/components/ui/Message';
 
 export default function useAuth() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loginVisible, setLoginVisible] = useState(false);
   const [pendingFlight, setPendingFlight] = useState(null);
+  const [initialAuthChecked, setInitialAuthChecked] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // 获取初始认证状态
+  const hasToken = !!localStorage.getItem('token');
 
   // 处理登录成功
   const handleLoginSuccess = async (credentials) => {
@@ -21,13 +25,22 @@ export default function useAuth() {
         setUser(user);
         Message.success('登录成功！');
 
-        // 如果有待处理的航班信息，跳转到确认页面
+        // 如果有待处理的航班信息，返回原页面
         const pendingFlight = localStorage.getItem('pendingFlight');
         if (pendingFlight) {
-          navigate('/booking-confirm', {
-            state: { flight: JSON.parse(pendingFlight) }
-          });
+          const flightData = JSON.parse(pendingFlight);
+          navigate(-1, { state: { flight: flightData } });
           localStorage.removeItem('pendingFlight');
+        } else {
+          // 检查是否有保存的原始路由
+          const fromRoute = localStorage.getItem('fromRoute');
+          if (fromRoute) {
+            navigate(fromRoute);
+            localStorage.removeItem('fromRoute');
+          } else {
+            // 默认返回上一页
+            navigate(-1);
+          }
         }
         return true;
       } else {
@@ -46,7 +59,10 @@ export default function useAuth() {
   // 检查登录状态
   const checkLoginStatus = async () => {
     // 如果已经有用户信息，不需要再次获取
-    if (user) return;
+    if (user) {
+      setInitialAuthChecked(true);
+      return;
+    }
     // 如果已有请求在进行，直接返回
     if (isFetching.current) return;
 
@@ -65,12 +81,18 @@ export default function useAuth() {
     } finally {
       isFetching.current = false;
       setLoading(false);
+      setInitialAuthChecked(true);
     }
   };
 
   // 页面刷新时检查登录状态
   useEffect(() => {
-    checkLoginStatus();
+    // 如果有token，立即设置初始状态
+    if (hasToken) {
+      checkLoginStatus();
+    } else {
+      setInitialAuthChecked(true);
+    }
   }, []);
 
   // 监听登录状态变化
@@ -87,6 +109,9 @@ export default function useAuth() {
     const currentState = state || location.state;
     if (currentState?.from === 'flightCard') {
       localStorage.setItem('pendingFlight', JSON.stringify(currentState.flight));
+    } else {
+      // 保存当前路由路径
+      localStorage.setItem('fromRoute', location.pathname);
     }
     navigate('/login', { state: currentState });
   };
@@ -155,6 +180,7 @@ export default function useAuth() {
     getRandomColor,
     getAvatarText,
     pendingFlight,
-    setPendingFlight
+    setPendingFlight,
+    isAuthenticated: !!user // 添加 isAuthenticated 属性
   };
 }

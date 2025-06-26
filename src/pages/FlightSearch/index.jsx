@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Message } from '@/components/ui/Message';
 import { Tabs, TabPane } from '@/components/ui/Tabs';
 import FlightSearchForm from './components/FlightSearchForm';
@@ -14,9 +15,11 @@ import './index.scss';
  * @returns {JSX.Element} 航班搜索页面组件
  */
 const FlightSearch = ({ onLoginClick = () => {} }) => {
+  const location = useLocation();
   // 搜索参数
   const [searchParams, setSearchParams] = useState(null);
   // 航班列表
+  const [cities, setCities] = useState([]); // 存储城市和机场数据
   const [flights, setFlights] = useState({
     outbound: [],
     inbound: []
@@ -62,7 +65,11 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
    * @param {number} page - 页码，从0开始
    * @param {number} size - 每页条数
    */
-  const handleSearch = async (params, page = 0, size = 10) => {
+  const handleSearch = async ({ cities: newCities, ...params }, page = 0, size = 10) => {
+    // 更新城市数据
+    if (newCities) {
+      setCities(newCities);
+    }
     setLoading(true);
     setSearchParams(params);
     setHasSearched(true);
@@ -195,18 +202,31 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
   const handlePageSizeChange = (size) => {
     if (!searchParams) return;
 
-    // 更新当前活动标签的每页条数
+    // 获取当前页码
+    const currentPage = pagination[activeTab].current;
+    
+    // 计算新的总页数
+    const totalItems = pagination[activeTab].total;
+    const newTotalPages = Math.ceil(totalItems / size);
+    
+    // 如果当前页码超出新的总页数，则调整到最后一页
+    // 否则保持当前页码不变
+    const newCurrentPage = currentPage >= newTotalPages && newTotalPages > 0 
+      ? newTotalPages - 1  // API使用从0开始的页码
+      : currentPage;
+
+    // 更新当前活动标签的每页条数和页码
     setPagination(prev => ({
       ...prev,
       [activeTab]: {
         ...prev[activeTab],
         pageSize: size,
-        current: 0 // 切换每页条数时重置为第一页
+        current: newCurrentPage
       }
     }));
 
-    // 重新搜索航班
-    handleSearch(searchParams, 0, size);
+    // 重新搜索航班，使用调整后的页码
+    handleSearch(searchParams, newCurrentPage, size);
   };
 
   /**
@@ -338,6 +358,13 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
    * @param {Object} flight - 选中的航班
    */
   const [selectedFlight, setSelectedFlight] = useState(null);
+
+  // 处理登录返回后的航班信息恢复
+  useEffect(() => {
+    if (location.state?.flight) {
+      setSelectedFlight(location.state.flight);
+    }
+  }, [location.state]);
   const [loginSource, setLoginSource] = useState(null);
 
   const handleLoginClick = (params) => {
@@ -435,6 +462,7 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
                         totalElements={pagination.outbound.total}
                         onPageChange={handlePageChange}
                         onPageSizeChange={handlePageSizeChange}
+                        cities={cities}
                       />
                     </TabPane>
                     <TabPane label="返程航班" name="inbound">
@@ -447,6 +475,7 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
                         totalElements={pagination.inbound.total}
                         onPageChange={handlePageChange}
                         onPageSizeChange={handlePageSizeChange}
+                        cities={cities}
                       />
                     </TabPane>
                   </Tabs>
@@ -463,6 +492,7 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
                     totalElements={pagination.outbound.total}
                     onPageChange={handlePageChange}
                     onPageSizeChange={handlePageSizeChange}
+                    cities={cities}
                   />
                 </>
               )}

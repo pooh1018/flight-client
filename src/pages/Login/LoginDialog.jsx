@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Modal } from '@/components/ui';
 import { useAuthContext } from '@/contexts/AuthContext';
 import './components/AuthForm.css';
@@ -11,6 +11,9 @@ import ResetPasswordForm from './components/ResetPasswordForm';
 const LoginDialog = () => {
     const { loginVisible, setLoginVisible, handleLoginSuccess } = useAuthContext();
     const navigate = useNavigate();
+    const location = useLocation();
+    // 获取用户尝试访问的路径（如果有）
+    const from = location.state?.from || '/home';
     const [isLogin, setIsLogin] = useState(true);
     const [showResetRequest, setShowResetRequest] = useState(false);
     const [showResetForm, setShowResetForm] = useState(false);
@@ -30,6 +33,7 @@ const LoginDialog = () => {
         const success = await handleLoginSuccess(credentials);
         if (success) {
             setLoginVisible(false);
+            navigate(from);
         }
     };
 
@@ -61,8 +65,8 @@ const LoginDialog = () => {
         <Modal
             title={getDialogTitle()}
             visible={loginVisible}
-            onClose={() => setLoginVisible(false)}
-            width="480px"
+            onCancel={() => setLoginVisible(false)}
+            width={480}
             className="auth-dialog"
         >
             {showResetForm ? (

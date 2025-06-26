@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext } from 'react';
-import Modal from '@/components/ui/Modal/Modal';
+import React, { createContext, useState, useContext, lazy, Suspense } from 'react';
+const Modal = lazy(() => import('@/components/ui/Modal/Modal'));
 
 export const ModalContext = createContext({
   showModal: () => {},
@@ -25,13 +25,27 @@ export const ModalProvider = ({ children }) => {
   const [modalProps, setModalProps] = useState({});
 
   const showModal = (title, content, options = {}) => {
-    const { onConfirm, onCancel, ...otherProps } = options;
-    
+    const {
+      onConfirm,
+      onCancel,
+      confirmText,
+      cancelText,
+      maskClosable = true, // 默认允许点击遮罩层关闭
+      closable = true, // 默认显示关闭按钮
+      ...otherProps
+    } = options;
+
     setModalTitle(title);
     setModalContent(content);
     setModalConfirm(onConfirm);
     setModalCancel(onCancel);
-    setModalProps(otherProps);
+    setModalProps({
+      ...otherProps,
+      confirmText: confirmText || '确定',
+      cancelText: cancelText || '取消',
+      maskClosable,
+      closable
+    });
     setModalVisible(true);
   };
 
@@ -59,9 +73,8 @@ export const ModalProvider = ({ children }) => {
       <Modal
         visible={modalVisible}
         title={modalTitle}
-        onClose={hideModal}
-        onConfirm={modalConfirm ? handleConfirm : null}
-        onCancel={modalCancel ? handleCancel : null}
+        onConfirm={modalConfirm ? handleConfirm : hideModal}
+        onCancel={modalCancel ? handleCancel : hideModal}
         {...modalProps}
       >
         {modalContent}
