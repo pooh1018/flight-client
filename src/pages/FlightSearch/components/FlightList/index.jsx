@@ -52,6 +52,8 @@ const FlightList = ({
 
   // 根据机场ID获取城市和机场信息
   const getCityAndAirportById = (airportId) => {
+
+    // console.log("cities", cities);
     // 处理cities为对象的情况
     if (cities && typeof cities === 'object' && !Array.isArray(cities)) {
       const cityObj = cities.from?.key === airportId ? cities.from :
@@ -59,7 +61,8 @@ const FlightList = ({
       if (cityObj) {
         return {
           city: cityObj.city || cityObj.name,
-          airport: cityObj.airportName
+          airport: cityObj.airportName,
+          airportLabel: cityObj.label
         };
       }
     }
@@ -107,6 +110,9 @@ const FlightList = ({
       const departureInfo = getCityAndAirportById(flight.departureAirportId);
       const arrivalInfo = getCityAndAirportById(flight.destinationAirportId);
 
+      // console.log("departureInfo", departureInfo);
+      // console.log("arrivalInfo", arrivalInfo);
+
       // 构建FlightCard期望的数据结构
       return {
         id: flight.id,
@@ -117,6 +123,8 @@ const FlightList = ({
         arrivalCity: arrivalInfo.city,
         departureAirport: departureInfo.airport,
         arrivalAirport: arrivalInfo.airport,
+        departureAirportLabel: departureInfo.airportLabel,
+        arrivalAirportLabel: arrivalInfo.airportLabel,
         airline: {
           code: airlineCode,
           name: `${airlineCode}航空`

@@ -42,7 +42,7 @@ export const ModalProvider = ({ children }) => {
     setModalProps({
       ...otherProps,
       confirmText: confirmText || '确定',
-      cancelText: cancelText || '取消',
+      cancelText: cancelText,
       maskClosable,
       closable
     });

@@ -1,25 +1,26 @@
 .flight-search-form {
-  padding: 16px;
+  padding: 24px;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   max-width: 800px;
   margin: 0 auto;
 
   .trip-type-tabs {
     display: flex;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     border-bottom: 1px solid #e8e8e8;
 
     .tab-button {
-      padding: 6px 12px;
-      font-size: 14px;
+      padding: 8px 16px;
+      font-size: 15px;
       background: none;
       border: none;
       border-bottom: 2px solid transparent;
       cursor: pointer;
       transition: all 0.3s;
       color: #666;
+      font-weight: 500;
 
       &:hover {
         color: #1890ff;
@@ -38,36 +39,60 @@
 
   .form-row {
     display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 16px;
+    margin-bottom: 20px;
     align-items: flex-start;
+
+    &.dates-row {
+      margin-top: -8px; // 调整日期行的位置，使其与城市选择器对齐
+    }
+  }
+
+  .date-fields-container {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+
+    .date-field {
+      flex: 1;
+    }
   }
 
   .form-item-city {
     flex: 1;
+    min-width: 180px;
   }
 
   .form-item-date {
     flex: 1;
+    min-width: 180px;
+
+    :global {
+      .ant-picker {
+        width: 100%;
+      }
+    }
   }
 
   .form-item-passengers {
     flex: 0.4;
+    min-width: 120px;
   }
 
   .form-item-class {
     flex: 0.6;
+    min-width: 140px;
   }
 
   .swap-button-container {
     display: flex;
     align-items: center;
-    padding-top: 24px; /* Align with the select inputs */
+    padding-top: 32px; // 调整交换按钮的位置
   }
 
   .swap-button {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border: 1px solid #d9d9d9;
     background: #fff;
     border-radius: 50%;
@@ -78,10 +103,12 @@
     font-size: 16px;
     color: #666;
     transition: all 0.3s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 
     &:hover {
       color: #1890ff;
       border-color: #1890ff;
+      transform: scale(1.05);
     }
 
     &:focus {
@@ -112,6 +139,7 @@
       &:hover:not(:disabled) {
         color: #1890ff;
         border-color: #1890ff;
+        transform: scale(1.05);
       }
 
       &:disabled {
@@ -126,33 +154,102 @@
       text-align: center;
       font-size: 14px;
       color: #333;
+      font-weight: 500;
     }
   }
 
   .search-button {
     width: 100%;
-    height: 36px;
-    margin-top: 8px;
+    height: 40px;
+    margin-top: 16px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.3s;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
+    }
   }
 
-  /* 减小表单项的间距 */
   .form-item {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 
     &:last-child {
       margin-bottom: 0;
     }
 
-    /* 减小标签和输入框的间距 */
     .form-label {
-      margin-bottom: 4px;
-      font-size: 13px;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
     }
   }
 
-  /* 减小选择器和日期选择器的高度 */
-  .select, .date-picker {
-    height: 32px;
-    font-size: 13px;
+  :global {
+    .ant-select, .ant-picker {
+      height: 40px;
+      font-size: 14px;
+      border-radius: 6px;
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: #40a9ff;
+      }
+
+      &.ant-select-focused, &.ant-picker-focused {
+        border-color: #1890ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+
+    .ant-select-selector, .ant-picker {
+      height: 40px !important;
+      padding: 4px 11px !important;
+
+      .ant-select-selection-search-input {
+        height: 38px !important;
+      }
+
+      .ant-select-selection-item {
+        line-height: 32px !important;
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .flight-search-form {
+    padding: 16px;
+
+    .form-row {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .date-fields-container {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-item-city,
+    .form-item-date,
+    .form-item-passengers,
+    .form-item-class {
+      width: 100%;
+      min-width: 100%;
+    }
+
+    .swap-button-container {
+      padding: 8px 0;
+      justify-content: center;
+    }
+
+    .search-button {
+      margin-top: 24px;
+    }
   }
 }

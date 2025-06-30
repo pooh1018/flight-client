@@ -5,6 +5,10 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useModal } from '@/contexts/ModalContext';
 import { getBookingsByUserIdAndDateRange, cancelBooking } from '@/services/bookingApi';
+import flightApi from '@/services/flightApi';
+import { formatDate } from '@/utils/formatters';
+import { CABIN_CLASSES } from '@/config';
+import { fetchAirportData } from '@/config/index';
 import './index.scss';
 
 
@@ -21,6 +25,20 @@ const MyBookings = () => {
     pageSize: 10,
     total: 0
   });
+  const [airports, setAirports] = useState([]);
+
+  useEffect(() => {
+    // 获取所有机场数据
+    const loadAirports = async () => {
+      try {
+        const airportsData = await fetchAirportData();
+        setAirports(airportsData);
+      } catch (error) {
+        console.error('获取机场数据失败:', error);
+      }
+    };
+    loadAirports();
+  }, []);
 
   useEffect(() => {
     loadBookings();
@@ -37,7 +55,38 @@ const MyBookings = () => {
         // new Date(endDate.setHours(23, 59, 59, 999)).toISOString()
       );
 
-      setBookings(response.data);
+      // 获取每个预订对应的航班详情和机场信息
+      const bookingsWithDetails = await Promise.all(
+        response.data.map(async (booking) => {
+          try {
+            if (booking.flightId) {
+              const flightDetails = await flightApi.getFlightDetails(booking.flightId);
+              const flight = flightDetails.data;
+
+              // 从已获取的机场列表中查找对应的机场信息
+              const departureAirport = flight.departureAirportId ?
+                { data: airports.find(airport => airport.key === flight.departureAirportId) } : null;
+              const arrivalAirport = flight.destinationAirportId ?
+                { data: airports.find(airport => airport.key === flight.destinationAirportId) } : null;
+
+              return {
+                ...booking,
+                flightDetails: {
+                  ...flight,
+                  departureAirport: departureAirport?.data,
+                  arrivalAirport: arrivalAirport?.data
+                }
+              };
+            }
+            return booking;
+          } catch (error) {
+            console.error(`获取航班 ${booking.flightId} 详情或机场信息失败:`, error);
+            return booking;
+          }
+        })
+      );
+
+      setBookings(bookingsWithDetails);
       setPagination(prev => ({
         ...prev,
         total: response.total
@@ -100,9 +149,67 @@ const MyBookings = () => {
       key: 'reference'
     },
     {
-      title: '航班ID',
+      title: '航班信息',
+      key: 'flightInfo',
       dataIndex: 'flightId',
-      key: 'flightId'
+      render: (_, record) => {
+        // 使用我们获取的flightDetails和机场数据
+        const flightDetails = record.flightDetails || {};
+        const flight = record.flight || {};
+        const departureAirport = flightDetails.departureAirport || {};
+        const arrivalAirport = flightDetails.arrivalAirport || {};
+
+        return (
+          <div className="flight-info-container">
+            <div className="flight-number">
+              <strong>航班号:</strong> {flightDetails.flightNumber || flight.flightNumber || record.flightId}
+            </div>
+            <div className="flight-route">
+              <div className="departure">
+                <div>
+                  {departureAirport.city || '未知'}
+                </div>
+                <div>
+                  {flightDetails.departureTime ? formatDate(flightDetails.departureTime, 'MM-DD HH:mm') :
+                   flight.departureTime ? formatDate(flight.departureTime, 'MM-DD HH:mm') : '未知'}
+                </div>
+              </div>
+              <div className="arrival">
+                <div>
+                  {arrivalAirport.city || '未知'}
+                </div>
+                <div>
+                  {flightDetails.arrivalTime ? formatDate(flightDetails.arrivalTime, 'MM-DD HH:mm') :
+                   flight.arrivalTime ? formatDate(flight.arrivalTime, 'MM-DD HH:mm') : '未知'}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+    },
+    {
+      title: '乘客与舱位信息',
+      key: 'passengerAndCabin',
+      dataIndex: 'cabinClassType',
+      render: (_, record) => {
+        const cabinClassMap = {
+          '1': '经济舱',
+          '2': '高级经济舱',
+          '3': '商务舱',
+          '4': '头等舱'
+        };
+
+        const cabinClass = CABIN_CLASSES.find(cabin => cabin.value === String(record.cabinClassType));
+        const cabinName = cabinClass ? cabinClassMap[cabinClass.value] : `未知(${record.cabinClassType})`;
+
+        return (
+          <div className="passenger-cabin-info">
+            <div>{record.passengers.length}人</div>
+            <div>{cabinName}</div>
+          </div>
+        );
+      }
     },
     {
       title: '预订时间',
@@ -111,12 +218,6 @@ const MyBookings = () => {
       render: (time) => {
         return new Date(time).toLocaleString();
       }
-    },
-    {
-      title: '乘客数',
-      key: 'passengerCount',
-      dataIndex: 'passengers', // Add dataIndex even though we don't use it directly
-      render: (_, record) => record.passengers.length
     },
     {
       title: '总价',
@@ -136,19 +237,6 @@ const MyBookings = () => {
           'ALIPAY': '支付宝'
         };
         return methodMap[method] || method;
-      }
-    },
-    {
-      title: '舱位等级',
-      dataIndex: 'cabinClassType',
-      key: 'cabinClassType',
-      render: (type) => {
-        const typeMap = {
-          1: '经济舱',
-          2: '商务舱',
-          3: '头等舱'
-        };
-        return typeMap[type] || `未知(${type})`;
       }
     },
     {

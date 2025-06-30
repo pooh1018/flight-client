@@ -46,21 +46,21 @@ const Modal = ({
         </div>
         <div className="modal-content">{children}</div>
         <div className="modal-footer">
-          {/*{showCancel && (*/}
-          {/*  <Button*/}
-          {/*    type="default"*/}
-          {/*    onClick={handleCancel}*/}
-          {/*    className="modal-btn modal-btn-cancel"*/}
-          {/*    style={{*/}
-          {/*      minWidth: '80px',*/}
-          {/*      padding: '8px 16px',*/}
-          {/*      color: 'var(--text-color, #333) !important',*/}
-          {/*      fontSize: '14px !important'*/}
-          {/*    }}*/}
-          {/*  >*/}
-          {/*    {cancelText || '取消'}*/}
-          {/*  </Button>*/}
-          {/*)}*/}
+          {showCancel && (
+            <Button
+              type="default"
+              onClick={handleCancel}
+              className="modal-btn modal-btn-cancel"
+              style={{
+                minWidth: '80px',
+                padding: '8px 16px',
+                color: 'var(--text-color, #333) !important',
+                fontSize: '14px !important'
+              }}
+            >
+              {cancelText || '取消'}
+            </Button>
+          )}
           {showConfirm && (
             <Button
               type="primary"

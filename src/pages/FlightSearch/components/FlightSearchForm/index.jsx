@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Form, FormItem, Select, DatePicker, Button } from '@/components/ui';
 import { CABIN_CLASSES, fetchAirportData } from '@/config';
 import './index.scss';
@@ -19,7 +19,7 @@ const FlightSearchForm = ({ onSearch }) => {
 
   // 初始化时从localStorage读取数据
   const [formData, setFormData] = useState(() => {
-    const savedData = localStorage.getItem('flightSearchFormData');
+    const savedData = localStorage.getItem('flightSearchParams');
     if (savedData) {
       try {
         const parsedData = JSON.parse(savedData);
@@ -32,7 +32,7 @@ const FlightSearchForm = ({ onSearch }) => {
         }
         return parsedData;
       } catch (error) {
-        console.error('Error parsing saved form data:', error);
+        console.error('解析保存的表单数据时出错:', error);
       }
     }
     return {
@@ -80,26 +80,9 @@ const FlightSearchForm = ({ onSearch }) => {
       dataToSave.returnDate = dataToSave.returnDate.toISOString();
     }
 
-    localStorage.setItem('flightSearchFormData', JSON.stringify(dataToSave));
-    // console.log('Saved to localStorage:', dataToSave);
+    localStorage.setItem('flightSearchParams', JSON.stringify(dataToSave));
+    console.log('搜索参数已保存到localStorage:', dataToSave);
   }, [formData]);
-
-  // 用于调试
-  // useEffect(() => {
-  //   console.log('Current formData:', formData);
-  //   if (formData.departureDate) {
-  //     console.log('Departure date type:', typeof formData.departureDate);
-  //     console.log('Departure date instanceof Date:', formData.departureDate instanceof Date);
-  //     console.log('Departure date value:', formData.departureDate.toString());
-  //     console.log('Departure date toDateString:', formData.departureDate.toDateString());
-  //   }
-  //   if (formData.returnDate) {
-  //     console.log('Return date type:', typeof formData.returnDate);
-  //     console.log('Return date instanceof Date:', formData.returnDate instanceof Date);
-  //     console.log('Return date value:', formData.returnDate.toString());
-  //     console.log('Return date toDateString:', formData.returnDate.toDateString());
-  //   }
-  // }, [formData]);
 
   const handleChange = (name, value) => {
     console.log(`Handling change for ${name}:`, value);
@@ -159,14 +142,17 @@ const FlightSearchForm = ({ onSearch }) => {
     e.preventDefault();
     if (onSearch) {
       // 从cities中查找选中的出发和到达城市
-      const selectedCities = {
-        from: cities.find(city => city.key === formData.from),
-        to: cities.find(city => city.key === formData.to)
-      };
+      const fromCity = cities.find(city => city.key === formData.from);
+      const toCity = cities.find(city => city.key === formData.to);
 
       onSearch({
         ...formData,
-        cities: selectedCities // 只传递选中的城市数据
+        departureAirportId: fromCity?.value, // 使用value（即airportId）
+        arrivalAirportId: toCity?.value,     // 使用value（即airportId）
+        cities: {                            // 保持cities对象以供其他用途
+          from: fromCity,
+          to: toCity
+        }
       });
     }
   };
@@ -242,43 +228,63 @@ const FlightSearchForm = ({ onSearch }) => {
           </div>
         </div>
 
-        <div className="form-row">
-          <FormItem
-            label="出发日期"
-            required
-            error={!formData.departureDate ? '请选择出发日期' : ''}
-            className="form-item-date"
-          >
-            <DatePicker
-              value={formData.departureDate}
-              onChange={(date) => handleChange('departureDate', date)}
-              placeholder="Select departure date"
-              disabledDate={(current) => {
-                // 直接使用current，它应该已经是Date对象
-                return current && current < today;
-              }}
-            />
-          </FormItem>
+        <div className="form-row dates-row">
+          <div className="date-fields-container">
+            <div className="date-field">
+              <FormItem
+                label="出发日期"
+                required
+                error={!formData.departureDate ? '请选择出发日期' : ''}
+                className="form-item-date"
+              >
+                <DatePicker
+                  value={formData.departureDate}
+                  onChange={(date) => handleChange('departureDate', date)}
+                  placeholder="请选择出发日期"
+                  format="YYYY-MM-DD"
+                  disabledDate={(current) => {
+                    // 确保日期比较的时间部分都是0
+                    if (!current) return false;
+                    const currentDate = new Date(current);
+                    currentDate.setHours(0, 0, 0, 0);
+                    return currentDate < today;
+                  }}
+                />
+              </FormItem>
+            </div>
 
-          {formData.tripType === 'roundtrip' && (
-            <FormItem
-              label="Return Date"
-              required
-              error={!formData.returnDate ? 'Please select return date' : ''}
-              className="form-item-date"
-            >
-              <DatePicker
-                value={formData.returnDate}
-                onChange={(date) => handleChange('returnDate', date)}
-                placeholder="Select return date"
-                disabledDate={(current) => {
-                  // 直接使用current，它应该已经是Date对象
-                  const departureDate = formData.departureDate || today;
-                  return current && current < departureDate;
-                }}
-              />
-            </FormItem>
-          )}
+            {formData.tripType === 'roundtrip' && (
+              <div className="date-field">
+                <FormItem
+                  label="返程日期"
+                  required
+                  error={!formData.returnDate ? '请选择返程日期' : ''}
+                  className="form-item-date"
+                >
+                  <DatePicker
+                    value={formData.returnDate}
+                    onChange={(date) => handleChange('returnDate', date)}
+                    placeholder="请选择返程日期"
+                    format="YYYY-MM-DD"
+                    disabledDate={(current) => {
+                      if (!current) return false;
+
+                      // 确保日期比较的时间部分都是0
+                      const currentDate = new Date(current);
+                      currentDate.setHours(0, 0, 0, 0);
+
+                      // 使用出发日期或今天作为最早可选日期
+                      const departureDate = formData.departureDate || today;
+                      const minDate = new Date(departureDate);
+                      minDate.setHours(0, 0, 0, 0);
+
+                      return currentDate < minDate;
+                    }}
+                  />
+                </FormItem>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="form-row">
@@ -313,10 +319,10 @@ const FlightSearchForm = ({ onSearch }) => {
             <Select
               value={formData.class}
               onChange={(value) => handleChange('class', value)}
-              placeholder="Select cabin class"
+              placeholder="请选择舱位"
               options={CABIN_CLASSES}
               showSearch
-              noMatchText="No matching cabin classes found"
+              noMatchText="未找到匹配的舱位"
             />
             {!formData.class && <div className="error-message">Please select cabin class</div>}
           </div>

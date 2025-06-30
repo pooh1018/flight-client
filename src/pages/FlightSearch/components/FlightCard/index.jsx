@@ -54,31 +54,39 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
   const getStopsDisplay = () => {
     if (!stops || stops.length === 0) {
       return (
-        <div className="direct-flight">
-          <span className="stop-line" />
-          <span className="stop-text">直飞</span>
-        </div>
+          <div className="direct-flight">
+              <span className="stop-line"/>
+              {/*<span className="stop-text">直飞</span>*/}
+              <div className="stop-tags" style={{display: 'flex', gap: '8px'}}>
+                  <Tag
+                      type="primary"
+                      size="default"
+                  >
+                      直飞
+                  </Tag>
+              </div>
+          </div>
       );
     }
 
-    return (
-      <div className="stops-flight">
-        <div className="stop-points">
-          {stops.map((stop, index) => (
-            <Tooltip
-              key={index}
-              content={`${stop?.city || '未知城市'} - ${stop?.airport || '未知机场'}`}
-              placement="top"
-            >
-              <div className="stop-point" />
-            </Tooltip>
-          ))}
-        </div>
-        <span className="stop-text">
+      return (
+          <div className="stops-flight">
+              <div className="stop-points">
+                  {stops.map((stop, index) => (
+                      <Tooltip
+                          key={index}
+                          content={`${stop?.city || '未知城市'} - ${stop?.airport || '未知机场'}`}
+                          placement="top"
+                      >
+                          <div className="stop-point"/>
+                      </Tooltip>
+                  ))}
+              </div>
+              <span className="stop-text">
           {stops.length}次经停
         </span>
-      </div>
-    );
+          </div>
+      );
   };
 
   return (
@@ -252,11 +260,12 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
                         flightId: flight.id,
                         departure: flight.departureCity,
                         arrival: flight.arrivalCity,
+                        departureLabel: flight.departureAirportLabel,
+                        arrivalLabel: flight.arrivalAirportLabel,
                         date: flight.departureTime,
-                        price: flight.price,
-                        hasCabins: flight.cabins && flight.cabins.length > 0,
-                        CabinsClass: selectedCabinInfo.CabinsClass,
-                        selectedCabinId,
+                        // hasCabins: flight.cabins && flight.cabins.length > 0,
+                        CabinsClass: selectedCabinInfo,
+                        user,
                         airline: flight.airline,
                         flightNumber: flight.flightNumber,
                         departureTime: flight.departureTime ? formatDate(flight.departureTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
@@ -272,7 +281,7 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
                             onConfirm: () => {},
                             confirmText: '确定',
                             width: 400,
-                            closable: true
+                            maskClosable: false, // 不允许点击遮罩层关闭
                         });
                   }
                 } else {
@@ -285,8 +294,7 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
                             onConfirm: () => {}, // 使用 onConfirm 而不是 onCancel
                             confirmText: '确定', // 使用 confirmText 而不是 cancelText
                             width: 400,
-                            maskClosable: true, // 允许点击遮罩层关闭
-                            closable: true // 显示关闭按钮
+                            maskClosable: false, // 不允许点击遮罩层关闭
                         });
                     return;
                   }
@@ -298,10 +306,12 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
                             flightId: flight.id,
                             departure: flight.departureCity,
                             arrival: flight.arrivalCity,
+                            departureLabel: flight.departureAirportLabel,
+                            arrivalLabel: flight.arrivalAirportLabel,
                             date: flight.departureTime,
-                            price: flight.price,
-                            hasCabins: flight.cabins && flight.cabins.length > 0,
-                            selectedCabinId,
+                            // hasCabins: flight.cabins && flight.cabins.length > 0,
+                            CabinsClass: selectedCabinInfo,
+                            user,
                             airline: flight.airline,
                             flightNumber: flight.flightNumber,
                             departureTime: flight.departureTime ? formatDate(flight.departureTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',

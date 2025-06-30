@@ -33,7 +33,7 @@ export default defineConfig({
           'Accept-Charset': 'utf-8',
           'Content-Type': 'application/json; charset=utf-8'
         },
-        // rewrite: (path) => path.replace(/^\/api/, '')
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   },

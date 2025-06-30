@@ -5,7 +5,7 @@ import PrivateRoute from '@/components/PrivateRoute/PrivateRoute';
 
 const HomePage = lazy(() => import('../pages/Home/HomePage'));
 const FlightSearchPage = lazy(() => import('../pages/FlightSearch/index'));
-const MyBookingsPage = lazy(() => import('../pages/MyBookings/index'));
+const MyBookingsPage = lazy(() => import('../pages/MyBookings/componets'));
 const BookingDetail = lazy(() => import('../pages/Booking/BookingDetail/index'));
 const BookingDetailView = lazy(() => import('../pages/Booking/BookingDetailView/index'));
 const LoginDialog = lazy(() => import('../pages/Login/LoginDialog'));

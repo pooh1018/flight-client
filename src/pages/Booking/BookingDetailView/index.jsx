@@ -170,8 +170,8 @@ const BookingDetailView = () => {
             <DescriptionItem label="航班号">{booking.flightDetails?.flightNumber}</DescriptionItem>
             <DescriptionItem label="出发城市">{booking.flightDetails?.departureCity}</DescriptionItem>
             <DescriptionItem label="目的城市">{booking.flightDetails?.arrivalCity}</DescriptionItem>
-            <DescriptionItem label="出发时间">{booking.flightDetails?.formattedDeparture || 'N/A'}</DescriptionItem>
-            <DescriptionItem label="到达时间">{booking.flightDetails?.formattedArrival || 'N/A'}</DescriptionItem>
+            <DescriptionItem label="出发时间">{formatDate(booking.flightDetails?.formattedDeparture, 'YYYY-MM-DD HH:mm') || 'N/A'}</DescriptionItem>
+            <DescriptionItem label="到达时间">{formatDate(booking.flightDetails?.formattedArrival, 'YYYY-MM-DD HH:mm') || 'N/A'}</DescriptionItem>
             <DescriptionItem label="航班状态">{booking.flightDetails?.status}</DescriptionItem>
           </Descriptions>
         </div>

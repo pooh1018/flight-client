@@ -1,0 +1,176 @@
+.my-bookings {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .bookings-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+
+      h1 {
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0;
+        color: #333;
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+  }
+
+  // 航班信息容器样式
+  .flight-info-container {
+    padding: 12px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #e6f7ff;
+      box-shadow: 0 2px 6px rgba(24, 144, 255, 0.1);
+    }
+
+    .flight-number {
+      margin-bottom: 12px;
+      color: #1890ff;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .flight-route {
+      display: flex;
+      gap: 32px;
+      position: relative;
+      padding: 8px 0;
+
+      &::after {
+        content: '→';
+        position: absolute;
+        top: 50%;
+        left: 45%;
+        color: #1890ff;
+        font-size: 20px;
+        transform: translateY(-50%);
+      }
+
+      .departure, .arrival {
+        flex: 1;
+
+        div {
+          margin: 6px 0;
+          font-size: 14px;
+
+          strong {
+            color: #666;
+            margin-right: 6px;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+
+  // 乘客与舱位信息样式
+  .passenger-cabin-info {
+    padding: 10px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #e6f7ff;
+    }
+
+    div {
+      margin: 6px 0;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+
+      strong {
+        color: #666;
+        margin-right: 8px;
+        font-weight: 500;
+        min-width: 70px;
+      }
+    }
+  }
+
+  // 表格样式优化
+  :global {
+    .ant-table-thead > tr > th {
+      background: #fafafa;
+      font-weight: 500;
+    }
+
+    .ant-table-tbody > tr:hover > td {
+      background-color: #e6f7ff !important;
+    }
+
+    .ant-table-row {
+      transition: all 0.3s ease;
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .my-bookings {
+    padding: 16px;
+
+    .bookings-card {
+      padding: 16px;
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+
+        h1 {
+          font-size: 20px;
+        }
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+
+    .flight-info-container {
+      padding: 8px;
+
+      .flight-route {
+        flex-direction: column;
+        gap: 16px;
+
+        &::after {
+          display: none;
+        }
+      }
+    }
+
+    .passenger-cabin-info {
+      padding: 8px;
+
+      div {
+        flex-direction: column;
+        align-items: flex-start;
+
+        strong {
+          margin-bottom: 4px;
+        }
+      }
+    }
+  }
+}

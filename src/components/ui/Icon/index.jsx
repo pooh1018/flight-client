@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './Icon.scss';
+import DecorativeIcon from './DecorativeIcon';
 
 const icons = {
   block: (
@@ -20,3 +21,5 @@ Icon.propTypes = {
   name: PropTypes.string.isRequired,
   className: PropTypes.string
 };
+
+export { DecorativeIcon };

@@ -26,51 +26,41 @@ const formatDateForApi = (date) => {
 /**
  * 搜索航班
  * @param {Object} params - 搜索参数
- * @param {string} params.from - 出发城市
- * @param {string} params.to - 目的城市
- * @param {Date} params.date - 出发日期
- * @param {Date} [params.returnDate] - 返回日期（往返航班）
- * @param {string} params.cabinClass - 舱位等级
- * @param {number} params.passengers - 乘客数量
+ * @param {string} params.departureAirportId - 出发机场ID
+ * @param {string} params.arrivalAirportId - 到达机场ID
+ * @param {string} params.startDate - 出发日期（ISO格式）
+ * @param {string} [params.returnDate] - 返回日期（ISO格式，往返航班）
  * @param {number} [params.page=0] - 页码（从0开始）
  * @param {number} [params.size=10] - 每页大小
- * @param {string[]} [params.sort] - 排序字段和方向（如 ["price,asc", "departureTime,desc"]）
+ * @param {string[]} [params.sort] - 排序字段和方向
  * @returns {Promise} 搜索结果
  */
 const searchFlights = async (params) => {
   try {
-    // 格式化日期为YYYY-MM-DD格式
-    const formattedParams = {
-      ...params,
-      date: formatDateForApi(params.date),
-      returnDate: formatDateForApi(params.returnDate),
-      departureDate: formatDateForApi(params.date)
-    };
+    // 确保页码参数存在且为数字
+    const page = typeof params.page === 'number' ? params.page : 0;
+    const size = typeof params.size === 'number' ? params.size : 10;
+    
+    // 确保日期格式正确
+    const startDate = params.startDate || formatDateForApi(params.date);
+    const returnDate = params.returnDate ? formatDateForApi(params.returnDate) : null;
 
     // 如果是往返航班，需要同时搜索去程和返程
-    if (formattedParams.returnDate) {
+    if (returnDate) {
       const [outboundResponse, inboundResponse] = await Promise.all([
         service.post('flights/with-cabins/search/paged', {
-          departureAirportId: formattedParams.from,
-          destinationAirportId: formattedParams.to,
-          startDate: formattedParams.date
+          departureAirportId: params.departureAirportId,
+          destinationAirportId: params.arrivalAirportId,
+          startDate: startDate
         }, {
-          params: {
-            page: formattedParams.page,
-            size: formattedParams.size,
-            sort: formattedParams.sort
-          }
+          params: { page, size, sort: params.sort }
         }),
         service.post('flights/with-cabins/search/paged', {
-          departureAirportId: formattedParams.to,
-          destinationAirportId: formattedParams.from,
-          startDate: formattedParams.returnDate
+          departureAirportId: params.arrivalAirportId,
+          destinationAirportId: params.departureAirportId,
+          startDate: returnDate
         }, {
-          params: {
-            page: formattedParams.page,
-            size: formattedParams.size,
-            sort: formattedParams.sort
-          }
+          params: { page, size, sort: params.sort }
         })
       ]);
 
@@ -85,15 +75,11 @@ const searchFlights = async (params) => {
 
     // 单程航班搜索
     const response = await service.post('flights/with-cabins/search/paged', {
-      departureAirportId: formattedParams.from,
-      destinationAirportId: formattedParams.to,
-      startDate: formattedParams.date
+      departureAirportId: params.departureAirportId,
+      destinationAirportId: params.arrivalAirportId,
+      startDate: startDate
     }, {
-      params: {
-        page: formattedParams.page,
-        size: formattedParams.size,
-        sort: formattedParams.sort
-      }
+      params: { page, size, sort: params.sort }
     });
     return response;
   } catch (error) {

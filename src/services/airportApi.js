@@ -29,8 +29,7 @@ export function getAirportByCode(id) {
 // 根据机场code获取机场
 export function getAirportByAirportId(id) {
     return service({
-        url: 'airports/airId',
-        method: 'get',
-        params: { airportId: id }
+        url: `airports/airId/${id}`,
+        method: 'get'
     })
 }

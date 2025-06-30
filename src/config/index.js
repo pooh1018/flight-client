@@ -111,10 +111,10 @@ export const getAirlineByCode = (code) => {
  * 舱位类型
  */
 export const CABIN_CLASSES = [
-  { value: 'economy', label: 'Economy', description: '经济实惠的标准座位' },
-  { value: 'premium_economy', label: 'Premium Economy', description: '更宽敞的座位和更好的服务' },
-  { value: 'business', label: 'Business', description: '豪华座椅和优质服务' },
-  { value: 'first', label: 'First Class', description: '最高级别的舒适和服务' }
+  { value: '1', label: 'Economy', description: '经济实惠的标准座位' },
+  { value: '2', label: 'Premium Economy', description: '更宽敞的座位和更好的服务' },
+  { value: '3', label: 'Business', description: '豪华座椅和优质服务' },
+  { value: '4', label: 'First Class', description: '最高级别的舒适和服务' }
 ];
 
 /**

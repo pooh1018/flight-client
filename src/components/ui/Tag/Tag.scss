@@ -70,6 +70,19 @@
     }
   }
 
+  // 类型样式
+  &--danger {
+    @extend .custom-tag--red;
+  }
+
+  &--primary {
+    @extend .custom-tag--blue;
+  }
+
+  &--info {
+    @extend .custom-tag--green;
+  }
+
   // 预设颜色
   &--blue {
     color: #1890ff;

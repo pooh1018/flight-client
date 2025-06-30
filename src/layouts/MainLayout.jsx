@@ -21,7 +21,8 @@ const PATH_TO_TITLE = {
   'settings': '设置',
   'detail': '订单详情',
   'detail-view': '订单确认',
-  'success': '预订成功'
+  'success': '预订成功',
+  'confirm': '预订成功'
 };
 
 // 将路径转换为可读的标题

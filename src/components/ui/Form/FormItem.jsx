@@ -83,18 +83,26 @@ const FormItem = ({
     });
   }
 
+  // 生成字段ID
+  const fieldId = name ? `form-field-${name}` : undefined;
+
   // 渲染带样式的表单项
   return (
     <div className={`form-item ${className} ${error ? 'has-error' : ''}`}>
       {label && (
-        <label className={`form-item-label ${required ? 'required' : ''}`} style={{
-          textAlign: layout === 'horizontal' ? 'right' : 'left'
-        }}>
+        <label 
+          htmlFor={fieldId}
+          className={`form-item-label ${required ? 'required' : ''}`} 
+          style={{
+            textAlign: layout === 'horizontal' ? 'right' : 'left'
+          }}
+        >
           {label}
         </label>
       )}
       <div className="form-item-control">
         {cloneElement(Children.only(children), {
+          id: fieldId,
           value,
           onChange: handleChange,
           onBlur: handleBlur,

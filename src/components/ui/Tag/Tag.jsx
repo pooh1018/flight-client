@@ -15,7 +15,7 @@ const Tag = ({
   style = {},
   ...props
 }) => {
-  // 预设颜色
+  // 预设颜色和类型映射
   const presetColors = [
     'blue',
     'red',
@@ -26,6 +26,13 @@ const Tag = ({
     'cyan',
     'gray'
   ];
+
+  // 类型颜色映射
+  const typeColorMap = {
+    danger: 'red',
+    primary: 'blue',
+    info: 'green'
+  };
 
   // 处理关闭事件
   const handleClose = (e) => {
@@ -38,8 +45,10 @@ const Tag = ({
     onClick && onClick(e);
   };
 
-  // 判断是否为预设颜色
-  const isPresetColor = color && presetColors.includes(color);
+  // 构建类名
+  const baseClass = 'custom-tag';
+  const effectiveColor = typeColorMap[props.type] || color;
+  const isPresetColor = effectiveColor && presetColors.includes(effectiveColor);
 
   // 构建自定义样式
   const customStyle = { ...style };
@@ -49,12 +58,11 @@ const Tag = ({
     customStyle.color = '#fff';
   }
 
-  // 构建类名
-  const baseClass = 'custom-tag';
   const classes = [
     baseClass,
     size !== 'default' && `${baseClass}--${size}`,
-    color && isPresetColor && `${baseClass}--${color}`,
+    effectiveColor && isPresetColor && `${baseClass}--${effectiveColor}`,
+    props.type && `${baseClass}--${props.type}`,
     !bordered && `${baseClass}--no-border`,
     onClick && `${baseClass}--clickable`,
     className
@@ -90,7 +98,8 @@ Tag.propTypes = {
   bordered: PropTypes.bool,
   size: PropTypes.oneOf(['small', 'default', 'large']),
   className: PropTypes.string,
-  style: PropTypes.object
+  style: PropTypes.object,
+  type: PropTypes.oneOf(['danger', 'primary', 'info'])
 };
 
 // 检查点组件
