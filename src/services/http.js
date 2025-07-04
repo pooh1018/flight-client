@@ -20,9 +20,8 @@ service.interceptors.request.use(
         if (!config.url.startsWith('/')) {
             config.url = '/' + config.url;
         }
-
         // 添加api前缀
-        // config.url = '/api' + config.url;
+        config.url = '/api' + config.url;
 
         const token = getAuthToken();
         if (token) {

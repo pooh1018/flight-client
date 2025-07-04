@@ -137,7 +137,7 @@ const FlightList = ({
         status: flight.status,
         cabins: flight.cabinClasses || cabins, // 使用cabinClasses或cabins
         tags: [
-          { text: flight.status === 'scheduled' ? '准点' : '延误', type: flight.status === 'scheduled' ? 'success' : 'warning' },
+          { text: flight.status === 'scheduled' ? '准点' : '延误', type: flight.status === 'scheduled' ? 'info' : 'danger' },
           lowestPriceCabin && lowestPriceCabin.availableSeats < 10 ? { text: '余票紧张', type: 'danger' } : null,
           flight.stops === 0 ? { text: '直飞', type: 'primary' } : null,
           { text: `${cabins.length}种舱位可选`, type: 'info' }

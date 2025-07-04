@@ -73,8 +73,8 @@ const MyBookings = () => {
                 ...booking,
                 flightDetails: {
                   ...flight,
-                  departureAirport: departureAirport?.data,
-                  arrivalAirport: arrivalAirport?.data
+                  departureAirport: departureAirport.data,
+                  arrivalAirport: arrivalAirport.data
                 }
               };
             }
@@ -83,6 +83,8 @@ const MyBookings = () => {
             console.error(`获取航班 ${booking.flightId} 详情或机场信息失败:`, error);
             return booking;
           }
+
+          // console.log("flightDetails>>>>",flightDetails)
         })
       );
 
