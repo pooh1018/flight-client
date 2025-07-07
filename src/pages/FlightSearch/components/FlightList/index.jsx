@@ -318,7 +318,7 @@ const FlightList = ({
     if (loading) {
       return (
         <div className="flight-list-loading">
-          <Loading size="large" />
+          <Loading spinning={loading} tip="正在加载航班数据..."  size="large" />
         </div>
       );
     }

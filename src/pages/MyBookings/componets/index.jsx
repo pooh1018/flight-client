@@ -46,11 +46,14 @@ const MyBookings = () => {
     loadAirports();
   }, []);
 
-  // 监听日期范围和分页变化，重新加载数据
+  // 监听日期范围、分页变化和机场数据变化，重新加载数据
   useEffect(() => {
-    console.log('useEffect triggered - dateRange or pagination changed');
-    loadBookings();
-  }, [dateRange, pagination.current, pagination.pageSize]);
+    console.log('useEffect triggered - dateRange, pagination or airports changed');
+    // 只有当airports数据已加载时才加载预订数据
+    if (airports.length > 0) {
+      loadBookings();
+    }
+  }, [dateRange, pagination.current, pagination.pageSize, airports]);
 
   const loadBookings = async () => {
     setLoading(true);
@@ -97,7 +100,7 @@ const MyBookings = () => {
               const arrivalAirport = arrivalAirportId ?
                 airports.find(airport => airport.key === arrivalAirportId || airport.id === arrivalAirportId) : null;
 
-              console.log('找到的机场信息:', { departureAirport, arrivalAirport });
+              // console.log('找到的机场信息:', { departureAirport, arrivalAirport });
 
               return {
                 ...booking,
