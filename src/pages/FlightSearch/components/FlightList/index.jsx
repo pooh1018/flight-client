@@ -90,7 +90,10 @@ const FlightList = ({
     if (!flightData) return [];
 
     return flightData.map(item => {
-      const { flight, cabins } = item;
+      const { flight } = item;
+
+      // console.log("flight>>>>>>>>>>>>", flight);
+      const cabins = flight.cabinClasses || [];
 
       // 获取最低价格的舱位
       const lowestPriceCabin = cabins && cabins.length > 0
@@ -135,7 +138,7 @@ const FlightList = ({
         cabinClass: lowestPriceCabin ? lowestPriceCabin.name : "Economy",
         seatsAvailable: lowestPriceCabin ? lowestPriceCabin.availableSeats : 0,
         status: flight.status,
-        cabins: flight.cabinClasses || cabins, // 使用cabinClasses或cabins
+        cabins: cabins,
         tags: [
           { text: flight.status === 'scheduled' ? '准点' : '延误', type: flight.status === 'scheduled' ? 'info' : 'danger' },
           lowestPriceCabin && lowestPriceCabin.availableSeats < 10 ? { text: '余票紧张', type: 'danger' } : null,

@@ -32,3 +32,4 @@ export { default as Menu, MenuItem, SubMenu, MenuItemGroup } from './Menu';
 export { default as Counter } from './Counter';
 export { default as Empty } from './Empty';
 export { default as Descriptions, DescriptionItem } from './DescriptionList';
+export { default as DateRangePicker } from './DateRangePicker';

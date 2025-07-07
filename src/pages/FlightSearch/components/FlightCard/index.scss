@@ -340,6 +340,7 @@
       .airline-info {
         flex: none;
         width: 100%;
+        justify-content: center;
       }
 
       .flight-time {
@@ -364,6 +365,7 @@
         flex: none;
         width: 100%;
         text-align: center;
+        align-items: center;
       }
     }
 
@@ -398,6 +400,176 @@
             }
           }
         }
+      }
+    }
+
+    // 操作按钮在移动端始终可见
+    .flight-actions {
+      opacity: 1;
+      transform: translateY(0);
+      margin-top: 12px;
+    }
+  }
+}
+
+// 小屏幕手机响应式样式
+@media (max-width: 480px) {
+  .flight-card {
+    padding: 12px;
+    margin-bottom: 12px;
+
+    &:hover {
+      transform: none;
+    }
+
+    .flight-main {
+      padding: 12px 0;
+      gap: 12px;
+
+      .airline-info {
+        gap: 8px;
+
+        .airline-logo {
+          width: 36px;
+          height: 36px;
+        }
+
+        .airline-details {
+          gap: 8px;
+
+          .airline-name {
+            font-size: 14px;
+          }
+
+          .flight-number {
+            font-size: 12px;
+            padding: 1px 6px;
+          }
+        }
+      }
+
+      .flight-time {
+        gap: 16px;
+
+        .departure, .arrival {
+          gap: 4px;
+
+          .time {
+            font-size: 20px;
+          }
+
+          .airport-info {
+            .city {
+              font-size: 14px;
+            }
+
+            .airport {
+              font-size: 12px;
+            }
+          }
+        }
+
+        .flight-duration {
+          padding: 0 8px;
+
+          .duration {
+            font-size: 14px;
+          }
+
+          .stops {
+            font-size: 12px;
+          }
+        }
+      }
+
+      .price-info {
+        gap: 4px;
+
+        .price {
+          font-size: 24px;
+
+          .currency {
+            font-size: 16px;
+          }
+        }
+
+        .price-type {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .flight-details {
+      padding-top: 12px;
+      gap: 8px;
+
+      .detail-item {
+        flex: 1 1 100%;
+
+        .icon {
+          font-size: 14px;
+        }
+
+        .text {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .flight-actions {
+      gap: 8px;
+
+      .el-button {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+    }
+
+    .cabin-selection {
+      margin-top: 12px;
+      padding-top: 12px;
+
+      .cabin-selection-header {
+        margin-bottom: 8px;
+
+        h4 {
+          font-size: 14px;
+        }
+      }
+
+      .cabin-selection-content {
+        gap: 8px;
+
+        .cabin-option {
+          padding: 8px;
+
+          .cabin-info {
+            .cabin-name {
+              font-size: 14px;
+              margin-bottom: 2px;
+            }
+
+            .cabin-details {
+              gap: 8px;
+              font-size: 12px;
+            }
+          }
+
+          .cabin-price {
+            .price-amount {
+              font-size: 18px;
+            }
+          }
+        }
+      }
+    }
+
+    .tags {
+      padding: 4px;
+
+      .tag {
+        padding: 1px 6px;
+        font-size: 10px;
       }
     }
   }

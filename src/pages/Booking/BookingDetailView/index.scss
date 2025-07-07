@@ -142,3 +142,61 @@
     }
   }
 }
+
+// 小屏幕手机响应式设计
+@media (max-width: 480px) {
+  .booking-detail-view {
+    padding: 12px;
+
+    .booking-detail-card {
+      padding: 12px;
+      border-radius: 6px;
+
+      .page-header {
+        gap: 12px;
+        margin-bottom: 20px;
+
+        h1 {
+          font-size: 18px;
+        }
+
+        .status {
+          .ant-tag {
+            font-size: 12px;
+            padding: 2px 8px;
+          }
+        }
+      }
+
+      .section {
+        margin-bottom: 20px;
+
+        h2 {
+          font-size: 15px;
+          margin-bottom: 12px;
+        }
+
+        .ant-descriptions-item-label {
+          width: 80px;
+          font-size: 13px;
+        }
+
+        .ant-descriptions-item-content {
+          font-size: 13px;
+        }
+      }
+
+      .actions {
+        margin-top: 24px;
+        padding-top: 16px;
+        gap: 10px;
+
+        button {
+          min-width: 100%;
+          font-size: 14px;
+          padding: 8px 16px;
+        }
+      }
+    }
+  }
+}

@@ -16,7 +16,7 @@ export function createBooking(bookingData) {
 }
 
 /**
- * 获取预订列表（带分页）
+ * 获取预订列表（不带分页）
  * @param {start} params.date - 开始日期
  * @param {end} params.date - 结束日期
  * @returns {Promise} - API 响应
@@ -34,6 +34,36 @@ export function getBookingsByUserIdAndDateRange(start = null, end = null) {
     });
 }
 
+/**
+ * 获取预订列表（带分页）
+ * @param {start} params.start - 开始日期
+ * @param {end} params.end - 结束日期
+ * @param {number} [params.page=1] - 页码（从1开始）
+ * @param {number} [params.size=10] - 每页大小
+ * @param {string[]} [params.sort] - 排序字段和方向
+ * @returns {Promise} - API 响应
+ */
+export function getBookingsByUserIdAndDateRangePaged(params) {
+    const start = params?.start || null;
+    const end = params?.end || null;
+
+    // 确保页码参数存在且为数字
+    const page = typeof params.page === 'number' ? params.page : 1;
+    const size = typeof params.size === 'number' ? params.size : 10;
+    const sort = params.sort || undefined;
+
+    return service({
+        url: 'bookings/my/date-range/paged',
+        method: 'get',
+        params: {
+            start,
+            end,
+            page,
+            size,
+            sort
+        }
+    });
+}
 /**
  * 获取预订详情
  * @param {string} id - 预订ID

@@ -1,0 +1,36 @@
+.decorative-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 50%, #91caff 100%);
+  border-radius: 4px;
+  box-shadow: 0 3px 6px rgba(24, 144, 255, 0.2), 0 1px 2px rgba(24, 144, 255, 0.1);
+  border: 1px solid rgba(24, 144, 255, 0.1);
+
+  // 确保图标在容器中居中
+  svg, i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: inherit;
+    fill: currentColor;
+  }
+
+  // 添加鼠标悬停效果（当有onClick事件时）
+  &[onClick] {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(24, 144, 255, 0.25), 0 2px 4px rgba(24, 144, 255, 0.15);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(24, 144, 255, 0.15), 0 1px 2px rgba(24, 144, 255, 0.1);
+    }
+  }
+}
