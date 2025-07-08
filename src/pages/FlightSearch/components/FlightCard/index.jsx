@@ -12,9 +12,10 @@ import './index.scss';
  * @param {Object} props - 组件属性
  * @param {Object} props.flight - 航班信息
  * @param {Function} props.onSelect - 选择航班回调
+ * @param {Date|string} props.searchDate - 检索框中的出发日期
  * @returns {JSX.Element} 航班卡片组件
  */
-const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
+const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick, searchDate }) => {
 
   const navigate = useNavigate();
   // 添加状态来跟踪是否展开舱位选择面板
@@ -24,6 +25,22 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
   const [selectedCabinInfo, setSelectedCabinInfo] = useState(selectedCabin || null);
   const { showModal } = useModal();
   const { user } = useAuthContext();
+
+  // 检查所有舱位是否都已售罄
+  const allCabinsSoldOut = flight.cabins && flight.cabins.length > 0 &&
+    flight.cabins.every(cabin => cabin.availableSeats === 0);
+
+  // 检查航班日期是否与搜索日期一致
+  const isDifferentDate = () => {
+    if (!searchDate || !flight.departureTime) return false;
+
+    const flightDate = formatDate(flight.departureTime, 'YYYY-MM-DD');
+    const searchDateFormatted = typeof searchDate === 'string'
+      ? formatDate(searchDate, 'YYYY-MM-DD')
+      : formatDate(searchDate, 'YYYY-MM-DD');
+
+    return flightDate !== searchDateFormatted;
+  };
 
   const {
     id,
@@ -91,6 +108,21 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
 
   return (
     <Card className="flight-card">
+        {/* 日期不一致提示 */}
+        {isDifferentDate() && (
+          <div className="date-notice" style={{
+            textAlign: 'right',
+            marginBottom: '8px',
+            position: 'absolute',
+            top: '10px',
+            right: '10px'
+          }}>
+            <Tag type="primary" size="default">
+              无当日航班，为您推荐{formatDate(flight.departureTime, 'YYYY年MM月DD日')}航班
+            </Tag>
+          </div>
+        )}
+
         {/* 航空公司信息 - 右对齐 */}
         <div className="airline-info" style={{ justifyContent: 'flex-end' }}>
             {airlineInfo?.logoPath && (
@@ -184,7 +216,13 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
               {selectedCabinInfo.name} : {formatPrice(selectedCabinInfo.price)}
             </div>
           ) : (
-            <div className="no-cabin-selected">请选择仓位</div>
+            <div className="no-cabin-selected">
+              {allCabinsSoldOut ? (
+                <Tag type="danger" size="default" className="sold-out-tag">全部售罄</Tag>
+              ) : (
+                '请选择仓位'
+              )}
+            </div>
           )}
         </div>
 
@@ -231,7 +269,6 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
             <Button
               type="primary"
               size="small"
-              disabled={seatsAvailable !== undefined && seatsAvailable === 0}
               onClick={() => {
                 if (flight.cabins && flight.cabins.length > 0) {
                   setShowCabins(!showCabins);
@@ -241,13 +278,13 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
               }}
             >
               {flight.cabins && flight.cabins.length > 0
-                ? (showCabins ? '收起' : '选择舱位')
+                ? (showCabins ? '收起' : (allCabinsSoldOut ? '全部售罄' : '选择舱位'))
                 : (seatsAvailable !== undefined ? (seatsAvailable > 0 ? '选择' : '已售罄') : '选择')}
             </Button>
             <Button
               type="primary"
               size="small"
-              disabled={seatsAvailable !== undefined && seatsAvailable === 0}
+              disabled={allCabinsSoldOut}
               onClick={() => {
                 // 检查登录状态
                 console.log(user);
@@ -338,35 +375,48 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick }) => {
             {flight.cabins.map((cabin) => (
               <div
                 key={cabin.id}
-                className={`cabin-option ${selectedCabinId === cabin.id ? 'selected' : ''}`}
+                className={`cabin-option ${selectedCabinId === cabin.id ? 'selected' : ''} ${cabin.availableSeats === 0 ? 'sold-out' : ''}`}
                 onClick={() => {
-                  setSelectedCabinId(cabin.id);
-                  setSelectedCabinInfo(cabin);
-                  onSelect && onSelect(flight, cabin);
+                  // 如果座位数为0，不允许选择
+                  if (cabin.availableSeats > 0) {
+                    setSelectedCabinId(cabin.id);
+                    setSelectedCabinInfo(cabin);
+                    onSelect && onSelect(flight, cabin);
+                  }
                 }}
               >
                 <div className="cabin-info">
                   <div className="cabin-name">{cabin.name}</div>
                   <div className="cabin-details">
-                    <span>可用座位: {cabin.availableSeats}</span>
+                    {cabin.availableSeats > 0 ? (
+                      <span>可用座位: {cabin.availableSeats}</span>
+                    ) : null}
                     {cabin.features && cabin.features.map((feature, idx) => (
                       <span key={idx} className="cabin-feature">{feature}</span>
                     ))}
                   </div>
+                  {cabin.availableSeats === 0 && (
+                    <div className="sold-out-overlay">
+                      <Tag type="danger" size="large" className="sold-out-tag">已售罄</Tag>
+                    </div>
+                  )}
                 </div>
                 <div className="cabin-price">
                   <span className="price-amount">¥{cabin.price}</span>
                   <Button
                     size="small"
                     type={selectedCabinId === cabin.id ? "primary" : "default"}
+                    disabled={cabin.availableSeats === 0}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelectedCabinId(cabin.id);
-                      setSelectedCabinInfo(cabin);
-                      onSelect && onSelect(flight, cabin);
+                      if (cabin.availableSeats > 0) {
+                        setSelectedCabinId(cabin.id);
+                        setSelectedCabinInfo(cabin);
+                        onSelect && onSelect(flight, cabin);
+                      }
                     }}
                   >
-                    {selectedCabinId === cabin.id ? '已选择' : '选择'}
+                    {selectedCabinId === cabin.id ? '已选择' : (cabin.availableSeats === 0 ? '已售罄' : '选择')}
                   </Button>
                 </div>
               </div>

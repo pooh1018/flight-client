@@ -240,31 +240,48 @@ const BookingDetail = () => {
       return;
     }
 
+    // console.log("flightInfo?.CabinsClass.cabinClassType", flightInfo);
     const bookingData = {
       flightId: flightInfo?.flightId || '',
       passengers: allPassengers,
       totalPrice: totalPrice.toFixed(2),
       status: 'PENDING',
       paymentMethod: 'CREDIT_CARD',
-      cabinClassType: flightInfo?.CabinsClass.cabinClassType || 1,
+      cabinClassType: flightInfo?.CabinsClass.classType || 1,
       contactEmail: values.contactEmail || '',
       contactPhone: values.contactPhone || ''
     };
-    // console.log("bookingData", bookingData);
-    const response = await createBooking(bookingData);
-    // console.log("response", response);
-    if (response.success) {
-      Message.success('预订成功');
 
-      // 导航到成功页面并传递订单信息
-      navigate('/my-bookings/success', {
-        state: {
-          order: response.data,
-          flightInfo: flightInfo
-        }
-      });
-    } else {
-      Message.error('预订失败，请重试');
+    try {
+      // console.log("bookingData", bookingData);
+      const response = await createBooking(bookingData);
+      // console.log("response", response);
+      if (response.success) {
+        Message.success('预订成功');
+
+        // 导航到成功页面并传递订单信息
+        navigate('/my-bookings/success', {
+          state: {
+            order: response.data,
+            flightInfo: flightInfo
+          }
+        });
+      } else {
+        // 处理API返回的错误信息
+        const errorMsg = response.message || '预订失败，请重试';
+        Message.error(errorMsg);
+      }
+    } catch (error) {
+      console.error('预订失败:', error);
+      // 处理异常情况，可能是网络错误或服务器错误
+      if (error.response && error.response.data) {
+        // 如果错误对象包含服务器返回的错误信息
+        const serverError = error.response;
+        Message.error(serverError.message || '预订失败，请重试');
+      } else {
+        // 其他错误情况
+        Message.error('预订失败，请检查网络连接后重试');
+      }
     }
   };
 

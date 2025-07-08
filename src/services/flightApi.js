@@ -40,10 +40,12 @@ const searchFlights = async (params) => {
     // 确保页码参数存在且为数字
     const page = typeof params.page === 'number' ? params.page : 0;
     const size = typeof params.size === 'number' ? params.size : 10;
-    
+
     // 确保日期格式正确
-    const startDate = params.startDate || formatDateForApi(params.date);
+    const startDate = params.startDate ? formatDateForApi(params.startDate) : null;
     const returnDate = params.returnDate ? formatDateForApi(params.returnDate) : null;
+
+    console.log("returnDate>>>", returnDate);
 
     // 如果是往返航班，需要同时搜索去程和返程
     if (returnDate) {
@@ -63,6 +65,9 @@ const searchFlights = async (params) => {
           params: { page, size, sort: params.sort }
         })
       ]);
+
+      console.log("outboundResponse.data>>>",outboundResponse.data);
+      console.log("inboundResponse.data>>>",inboundResponse.data);
 
       return {
         success: true,

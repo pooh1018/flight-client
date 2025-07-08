@@ -258,6 +258,7 @@
 
         .cabin-info {
           flex: 1;
+          position: relative; // 添加相对定位，用于定位已售罄覆盖层
 
           .cabin-name {
             font-size: 16px;
@@ -278,6 +279,31 @@
                 content: '•';
                 margin-right: 4px;
               }
+            }
+          }
+
+          // 已售罄覆盖层
+          .sold-out-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.7);
+            z-index: 1;
+
+            .sold-out-tag {
+              font-size: 18px;
+              font-weight: bold;
+              padding: 6px 16px;
+              background-color: #ff4d4f;
+              color: white;
+              border-radius: 4px;
+              box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
+              transform: rotate(-5deg);
             }
           }
         }

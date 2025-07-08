@@ -16,6 +16,7 @@ import './index.scss';
  * @param {Function} props.onPageChange - 页码变化回调
  * @param {Function} props.onPageSizeChange - 每页条数变化回调
  * @param {Array} props.cities - 城市和机场数据列表
+ * @param {Date|string} props.searchDate - 检索框中的出发日期
  * @returns {JSX.Element} 航班列表组件
  */
 const FlightList = ({
@@ -28,7 +29,8 @@ const FlightList = ({
   totalElements = 0,
   onPageChange,
   onPageSizeChange,
-  cities = []
+  cities = [],
+  searchDate
 }) => {
   // 本地分页状态
   const [localPagination, setLocalPagination] = useState({
@@ -136,7 +138,13 @@ const FlightList = ({
         stops: stopsArray,
         duration: calculateDuration(flight.departureTime, flight.arrivalTime),
         cabinClass: lowestPriceCabin ? lowestPriceCabin.name : "Economy",
-        seatsAvailable: lowestPriceCabin ? lowestPriceCabin.availableSeats : 0,
+        seatsAvailable: lowestPriceCabin ? 
+          // 如果当前舱位座位数不足，显示下一个舱位
+          (lowestPriceCabin.availableSeats > 0 ? 
+            lowestPriceCabin.availableSeats : 
+            // 查找下一个有座位的舱位
+            cabins.find(cabin => cabin.availableSeats > 0)?.availableSeats || 0
+          ) : 0,
         status: flight.status,
         cabins: cabins,
         tags: [
@@ -350,6 +358,7 @@ const FlightList = ({
           flight={flight}
           onSelect={onBook}
           onLoginClick={onLoginClick}
+          searchDate={searchDate}
         />
       );
     });
@@ -373,7 +382,7 @@ const FlightList = ({
                 onChange={handlePageChange}
                 onShowSizeChange={handlePageChange}
                 showSizeChanger
-                showQuickJumper
+                // showQuickJumper
                 showTotal={total => `共 ${total} 条`}
                 disabled={loading}
                 responsive="true"

@@ -235,7 +235,7 @@ const MyBookings = () => {
                    flight.departureTime ? formatDate(flight.departureTime, 'MM-DD HH:mm') : '时间未知'}
                 </div>
               </div>
-              <div className="flight-arrow">→</div>
+              {/*<div className="flight-arrow">→</div>*/}
               <div className="arrival">
                 <div>
                   {arrivalAirport.city || arrivalAirport.name || '未知目的地'}

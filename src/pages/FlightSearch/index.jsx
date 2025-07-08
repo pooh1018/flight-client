@@ -60,19 +60,19 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
       // 首先尝试从localStorage中获取最新的搜索参数
       const searchParamsData = localStorage.getItem('flightSearchParams');
       const isNewSearch = localStorage.getItem('isNewSearch') === 'true';
-      
+
       if (searchParamsData) {
         const parsedParams = JSON.parse(searchParamsData);
-        
+
         // 处理日期字符串，转换为Date对象
         const params = {
           ...parsedParams,
           departureDate: parsedParams.departureDate ? new Date(parsedParams.departureDate) : null,
           returnDate: parsedParams.returnDate ? new Date(parsedParams.returnDate) : null
         };
-        
+
         setSearchParams(params);
-        
+
         // 如果是新搜索且未自动搜索过，则触发搜索
         if (isNewSearch && !hasAutoSearched) {
           console.log('执行新搜索:', params);
@@ -118,10 +118,10 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
       // 保存搜索参数到localStorage
       const searchParamsToSave = {
         ...params,
-        departureDate: params.departureDate instanceof Date 
+        departureDate: params.departureDate instanceof Date
           ? params.departureDate.toISOString()
           : params.departureDate,
-        returnDate: params.returnDate instanceof Date 
+        returnDate: params.returnDate instanceof Date
           ? params.returnDate.toISOString()
           : params.returnDate
       };
@@ -136,7 +136,7 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
 
       // 验证并格式化日期
       let departureDateWithZone = null;
-      let returnDateWithZone = undefined;
+      let returnDateWithZone = null;
 
       try {
         // 验证并处理出发日期
@@ -182,6 +182,7 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
         departureAirportId: params.departureAirportId,
         arrivalAirportId: params.arrivalAirportId,
         startDate: params.departureDate.toISOString(),
+        returnDate: returnDateWithZone || null,
         page: 0,  // 确保从第一页开始
         size: size || 10
       };
@@ -548,6 +549,7 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
                         onPageChange={handlePageChange}
                         onPageSizeChange={handlePageSizeChange}
                         cities={cities}
+                        searchDate={searchParams?.departureDate}
                       />
                     </TabPane>
                     <TabPane label="返程航班" name="inbound">
@@ -561,6 +563,7 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
                         onPageChange={handlePageChange}
                         onPageSizeChange={handlePageSizeChange}
                         cities={cities}
+                        searchDate={searchParams?.returnDate}
                       />
                     </TabPane>
                   </Tabs>
@@ -578,6 +581,7 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
                     onPageChange={handlePageChange}
                     onPageSizeChange={handlePageSizeChange}
                     cities={cities}
+                    searchDate={searchParams?.departureDate}
                   />
                 </>
               )}
