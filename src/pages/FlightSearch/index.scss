@@ -61,6 +61,18 @@
         }
       }
 
+      .round-trip-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+
+        .flight-column {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+      }
+
       .flight-list-container {
         .flight-list {
           display: flex;

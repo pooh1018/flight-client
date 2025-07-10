@@ -9,17 +9,18 @@ const BookingSuccess = () => {
   const location = useLocation();
 
   // 从location.state中获取订单信息
-  const { order, flightInfo } = location.state || {};
+  const { order, orders, flightInfo, inboundFlight, isRoundTrip } = location.state || {};
+  const currentOrder = order || (orders && orders[0]);
 
   // 如果没有订单信息，重定向到首页
   useEffect(() => {
-    if (!order || !flightInfo) {
+    if (!currentOrder || !flightInfo) {
       navigate('/home');
     }
-  }, [order, flightInfo, navigate]);
+  }, [currentOrder, flightInfo, navigate]);
 
   // 如果没有订单信息，显示加载中
-  if (!order || !flightInfo) {
+  if (!currentOrder || !flightInfo) {
     return null;
   }
 
@@ -34,15 +35,81 @@ const BookingSuccess = () => {
 
         <div className="order-details">
           <h2 className="details-title">订单详情</h2>
-          <div className="details-content">
-            <p>订单号: {order.reference}</p>
-            <p>航班号: {flightInfo.flightNumber}</p>
-            <p>出发: {flightInfo.departureLabel} - {formatDate(flightInfo.departureTime)}</p>
-            <p>到达: {flightInfo.arrivalLabel} - {formatDate(flightInfo.arrivalTime)}</p>
-            <p>乘客: {order.passengers.length || '未知'}</p>
-            <p>舱位: {flightInfo.CabinsClass.name}</p>
-            <p>支付金额: ¥{order.totalPrice}</p>
+
+          {/* 去程订单 */}
+          <div className="trip-card outbound">
+            <h3 className="trip-title">去程信息</h3>
+            <div className="trip-content">
+              <div className="detail-row">
+                <span className="detail-label">订单号:</span>
+                <span className="detail-value">{orders?.[0]?.reference || order?.reference || '未知'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">航班号:</span>
+                <span className="detail-value">{flightInfo.flightNumber}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">出发:</span>
+                <span className="detail-value">{flightInfo.departureLabel} - {formatDate(flightInfo.departureTime)}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">到达:</span>
+                <span className="detail-value">{flightInfo.arrivalLabel} - {formatDate(flightInfo.arrivalTime)}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">乘客:</span>
+                <span className="detail-value">{orders?.[0]?.passengers?.length || order?.passengers?.length || '未知'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">舱位:</span>
+                <span className="detail-value">{flightInfo.CabinsClass?.name || '未知'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">金额:</span>
+                <span className="detail-value">¥{orders?.[0]?.totalPrice || order?.totalPrice || '未知'}</span>
+              </div>
+            </div>
           </div>
+
+          {/* 回程订单 */}
+          {isRoundTrip && inboundFlight && orders?.[1] && (
+            <>
+              <div className="divider"></div>
+              <div className="trip-card inbound">
+                <h3 className="trip-title">回程信息</h3>
+                <div className="trip-content">
+                  <div className="detail-row">
+                    <span className="detail-label">订单号:</span>
+                    <span className="detail-value">{orders[1]?.reference || '未知'}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">航班号:</span>
+                    <span className="detail-value">{inboundFlight.flightNumber}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">出发:</span>
+                    <span className="detail-value">{inboundFlight.departureLabel} - {formatDate(inboundFlight.departureTime)}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">到达:</span>
+                    <span className="detail-value">{inboundFlight.arrivalLabel} - {formatDate(inboundFlight.arrivalTime)}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">乘客:</span>
+                    <span className="detail-value">{orders[1]?.passengers?.length || '未知'}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">舱位:</span>
+                    <span className="detail-value">{inboundFlight.CabinsClass?.name || '未知'}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">金额:</span>
+                    <span className="detail-value">¥{orders[1]?.totalPrice || '未知'}</span>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="success-actions">

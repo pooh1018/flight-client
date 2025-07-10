@@ -125,6 +125,17 @@
     font-weight: 600;
   }
 
+  .round-trip-flights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .flight-card {
     background: #fff;
     border-radius: 16px;

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { Message } from '@/components/ui/Message';
 import { Tabs, TabPane } from '@/components/ui/Tabs';
@@ -8,13 +9,40 @@ import FlightFilters from './components/FlightFilters';
 import flightApi from '@/services/flightApi';
 import { getSearchHistory, saveSearchHistory } from '@/utils/storage';
 import { formatInTimeZone } from 'date-fns-tz';
+import { formatDate } from '@/utils/formatters';
 import './index.scss';
+import {useAuthContext} from "@/contexts/AuthContext";
 
 /**
  * 航班搜索页面
  * @returns {JSX.Element} 航班搜索页面组件
  */
 const FlightSearch = ({ onLoginClick = () => {} }) => {
+  const navigate = useNavigate();
+  const [isSearchCollapsed, setIsSearchCollapsed] = useState(false);
+  const searchSectionRef = useRef(null);
+  const lastScrollY = useRef(0);
+  const { user } = useAuthContext();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!searchSectionRef.current) return;
+
+      const searchSection = searchSectionRef.current;
+      const searchSectionHeight = searchSection.offsetHeight;
+      const scrollPosition = window.scrollY;
+      const shouldCollapse = scrollPosition > searchSectionHeight / 2;
+
+      // Only update state if needed to avoid unnecessary re-renders
+      if (shouldCollapse !== isSearchCollapsed) {
+        setIsSearchCollapsed(shouldCollapse);
+      }
+      lastScrollY.current = scrollPosition;
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isSearchCollapsed]);
   const location = useLocation();
   // 搜索参数
   const [searchParams, setSearchParams] = useState(null);
@@ -114,6 +142,16 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
     setFilters({}); // 重置过滤条件
     setActiveTab('outbound'); // 重置活动标签为去程
 
+    // 清空已选择的航班和舱位信息
+    setSelectedFlights({
+      outbound: null,
+      inbound: null
+    });
+    setSelectedCabins({
+      outbound: null,
+      inbound: null
+    });
+
     try {
       // 保存搜索参数到localStorage
       const searchParamsToSave = {
@@ -190,8 +228,9 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
       const response = await flightApi.searchFlights(searchParams);
 
       if (response.success) {
+        // console.log("params.tripType>>>>>>", params.tripType);
         // 处理往返航班和单程航班的不同数据结构
-        if (params.tripType === 'roundTrip') {
+        if (params.tripType === 'roundtrip') {
           // 更新航班数据
           setFlights({
             outbound: response.data.outbound?.content || [],
@@ -443,7 +482,17 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
    * 选择航班
    * @param {Object} flight - 选中的航班
    */
-  const [selectedFlight, setSelectedFlight] = useState(null);
+  // 选中的航班信息
+  const [selectedFlights, setSelectedFlights] = useState({
+    outbound: null,
+    inbound: null
+  });
+
+  // 选中的舱位信息
+  const [selectedCabins, setSelectedCabins] = useState({
+    outbound: null,
+    inbound: null
+  });
 
   // 处理登录返回后的航班信息恢复
   useEffect(() => {
@@ -481,35 +530,83 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
     }
   };
 
-  const handleFlightSelect = (flight) => {
+  /**
+   * 处理航班和舱位选择
+   * @param {Object} flight - 选中的航班
+   * @param {string} type - 航班类型 (outbound/inbound)
+   * @param {Object} cabin - 选中的舱位 (可选)
+   */
+  const handleFlightSelect = (flight, type, cabin = null) => {
     const isLoggedIn = localStorage.getItem('token');
-    if (!isLoggedIn) {
+
+    // 更新选中的航班
+    setSelectedFlights(prev => ({
+      ...prev,
+      [type]: flight
+    }));
+
+    // 更新选中的舱位
+    if (cabin) {
+      setSelectedCabins(prev => ({
+        ...prev,
+        [type]: cabin
+      }));
+    } else {
+      // 如果没有选择舱位，清除之前选择的舱位
+      setSelectedCabins(prev => ({
+        ...prev,
+        [type]: null
+      }));
+    }
+
+    // 如果未登录，处理登录逻辑
+    if (!isLoggedIn && cabin) {
       handleLoginClick({
         from: 'flightCard',
         flightId: flight.id,
         departure: flight.departure,
         arrival: flight.arrival,
         date: flight.date,
-        price: flight.price,
-        hasCabins: flight.cabins && flight.cabins.length > 0,
-        selectedCabinId: flight.selectedCabinId
+        price: cabin ? cabin.price : flight.price,
+        hasCabins: true,
+        selectedCabinId: cabin.id
       });
       return;
     }
-    // 已登录则直接跳转到预定确认页面
-    navigate('/booking/confirm', { state: { flight } });
+
+    // 已登录且选择了舱位，如果是单程或已选择两个航班的舱位，可以跳转到预订确认页面
+    if (isLoggedIn && cabin) {
+      const isComplete = !isRoundTrip || (selectedCabins.outbound && selectedCabins.inbound);
+      if (isComplete) {
+        // 这里可以添加跳转到预订确认页面的逻辑
+        // navigate('/booking/confirm', {
+        //   state: {
+        //     outbound: { flight: selectedFlights.outbound, cabin: selectedCabins.outbound },
+        //     inbound: isRoundTrip ? { flight: selectedFlights.inbound, cabin: selectedCabins.inbound } : null
+        //   }
+        // });
+      }
+    }
   };
 
   // 当前显示的航班列表
   const currentFlights = filteredFlights[activeTab] || [];
   // 是否为往返航班
-  const isRoundTrip = searchParams?.tripType === 'roundTrip';
+  const isRoundTrip = searchParams?.tripType === 'roundtrip';
 
   return (
     <div className="flight-search-page">
       <div className="content-wrapper">
         {/* 搜索表单区域 */}
-        <div className="search-section">
+        <div
+          className="search-section"
+          ref={searchSectionRef}
+          style={{
+            transition: 'all 0.3s ease',
+            maxHeight: isSearchCollapsed ? '0' : 'none',
+            overflow: isSearchCollapsed ? 'hidden' : 'visible'
+          }}
+        >
           <h2 className="section-title">航班搜索</h2>
           <FlightSearchForm
             initialValues={searchParams}
@@ -532,49 +629,224 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
 
             {/* 航班列表区域 */}
             <div className="flights-container">
+              {/* 预订按钮 - 在往返模式下需要选择两个航班，单程模式下只需选择一个航班 */}
+              {((isRoundTrip && selectedFlights.outbound && selectedCabins.outbound &&
+                selectedFlights.inbound && selectedCabins.inbound) ||
+                (!isRoundTrip && selectedFlights.outbound && selectedCabins.outbound)) && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  marginBottom: '15px'
+                }}>
+                  <button
+                    className="book-now-button"
+                    style={{
+                      backgroundColor: '#1890ff',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '10px 20px',
+                      fontSize: '16px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold'
+                    }}
+                    onClick={() => {
+                      // 计算总价
+                      const totalPrice = (selectedCabins.outbound?.price || 0) +
+                                        (isRoundTrip ? (selectedCabins.inbound?.price || 0) : 0);
+
+                      // 构建预订信息
+                      const bookingInfo = {
+                        outbound: {
+                          flight: selectedFlights.outbound,
+                          cabin: selectedCabins.outbound
+                        },
+                        inbound: isRoundTrip ? {
+                          flight: selectedFlights.inbound,
+                          cabin: selectedCabins.inbound
+                        } : null,
+                        totalPrice: totalPrice,
+                        isRoundTrip: isRoundTrip
+                      };
+
+                      // 这里可以添加导航到订单页面的逻辑
+                      console.log('预订信息:', bookingInfo);
+                      Message.success('即将跳转到订单页面...');
+
+                      // 获取去程航班信息
+                      const outboundFlight = selectedFlights.outbound;
+                      const outboundCabin = selectedCabins.outbound;
+
+                      // 已登录且选择了仓位，跳转到预定确认页
+                      navigate('/my-bookings/detail', {
+                        state: {
+                          flightInfo: {
+                            flightId: outboundFlight.id,
+                            departure: outboundFlight.departureCity,
+                            arrival: outboundFlight.arrivalCity,
+                            departureLabel: outboundFlight.departureAirport,
+                            arrivalLabel: outboundFlight.arrivalAirport,
+                            date: outboundFlight.departureTime,
+                            hasCabins: outboundFlight.cabins && outboundFlight.cabins.length > 0,
+                            CabinsClass: outboundCabin,
+                            user: user,
+                            airline: outboundFlight.airline,
+                            flightNumber: outboundFlight.flightNumber,
+                            departureTime: outboundFlight.departureTime ? formatDate(outboundFlight.departureTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
+                            arrivalTime: outboundFlight.arrivalTime ? formatDate(outboundFlight.arrivalTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
+                            duration: outboundFlight.duration
+                          },
+                          // 如果是往返航班且已选择回程航班，添加回程航班信息
+                          inboundFlight: isRoundTrip && selectedFlights.inbound && selectedCabins.inbound ? {
+                            flightId: selectedFlights.inbound.id,
+                            departure: selectedFlights.inbound.departureCity,
+                            arrival: selectedFlights.inbound.arrivalCity,
+                            departureLabel: selectedFlights.inbound.departureAirport,
+                            arrivalLabel: selectedFlights.inbound.arrivalAirport,
+                            date: selectedFlights.inbound.departureTime,
+                            hasCabins: selectedFlights.inbound.cabins && selectedFlights.inbound.cabins.length > 0,
+                            CabinsClass: selectedCabins.inbound,
+                            airline: selectedFlights.inbound.airline,
+                            flightNumber: selectedFlights.inbound.flightNumber,
+                            departureTime: selectedFlights.inbound.departureTime ? formatDate(selectedFlights.inbound.departureTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
+                            arrivalTime: selectedFlights.inbound.arrivalTime ? formatDate(selectedFlights.inbound.arrivalTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
+                            duration: selectedFlights.inbound.duration
+                          } : null
+                        }
+                      });
+                    }}
+                  >
+                    立即预订 ¥{((selectedCabins.outbound?.price || 0) + (isRoundTrip ? (selectedCabins.inbound?.price || 0) : 0)).toFixed(2)}
+                  </button>
+                </div>
+              )}
+
               {isRoundTrip ? (
-                <>
-                  <h3 className="section-title">
-                    {activeTab === 'outbound' ? '去程航班' : '返程航班'}
-                  </h3>
-                  <Tabs activeName={activeTab} onTabClick={(tab) => handleTabChange(tab.props.name)}>
-                    <TabPane label="去程航班" name="outbound">
-                      <FlightList
-                        flights={filteredFlights.outbound}
-                        loading={loading && activeTab === 'outbound'}
-                        onBook={handleFlightSelect}
-                        currentPage={pagination.outbound.current}
-                        pageSize={pagination.outbound.pageSize}
-                        totalElements={pagination.outbound.total}
-                        onPageChange={handlePageChange}
-                        onPageSizeChange={handlePageSizeChange}
-                        cities={cities}
-                        searchDate={searchParams?.departureDate}
-                      />
-                    </TabPane>
-                    <TabPane label="返程航班" name="inbound">
-                      <FlightList
-                        flights={filteredFlights.inbound}
-                        loading={loading && activeTab === 'inbound'}
-                        onBook={handleFlightSelect}
-                        currentPage={pagination.inbound.current}
-                        pageSize={pagination.inbound.pageSize}
-                        totalElements={pagination.inbound.total}
-                        onPageChange={handlePageChange}
-                        onPageSizeChange={handlePageSizeChange}
-                        cities={cities}
-                        searchDate={searchParams?.returnDate}
-                      />
-                    </TabPane>
-                  </Tabs>
-                </>
+                <div className="round-trip-grid">
+                  <div
+                    className="flight-column"
+                    style={{
+                      maxHeight: 'calc(100vh - 180px)',
+                      overflowY: 'auto',
+                      paddingRight: '10px'
+                    }}
+                  >
+                    <div style={{
+                      position: 'sticky',
+                      top: 0,
+                      backgroundColor: '#fff',
+                      padding: '10px 0',
+                      zIndex: 1,
+                      marginBottom: '10px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <h3 className="section-title">去程航班</h3>
+                      {selectedFlights.outbound && selectedCabins.outbound && (
+                        <div style={{
+                          fontSize: '14px',
+                          color: '#666'
+                        }}>
+                          已选择: {selectedFlights.outbound.flightNumber} - {selectedCabins.outbound.name} - ¥{selectedCabins.outbound.price.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                    <FlightList
+                      flights={filteredFlights.outbound}
+                      loading={loading}
+                      onBook={(flight, cabin) => handleFlightSelect(flight, 'outbound', cabin)}
+                      currentPage={pagination.outbound.current}
+                      pageSize={pagination.outbound.pageSize}
+                      totalElements={pagination.outbound.total}
+                      onPageChange={handlePageChange}
+                      onPageSizeChange={handlePageSizeChange}
+                      cities={cities}
+                      searchDate={searchParams?.departureDate}
+                      selectedFlight={selectedFlights.outbound}
+                      selectedCabin={selectedCabins.outbound}
+                      isRoundTrip={isRoundTrip}
+                    />
+                  </div>
+                  <div
+                    className="flight-column"
+                    style={{
+                      maxHeight: 'calc(100vh - 180px)',
+                      overflowY: 'auto',
+                      paddingRight: '10px'
+                    }}
+                  >
+                    <div style={{
+                      position: 'sticky',
+                      top: 0,
+                      backgroundColor: '#fff',
+                      padding: '10px 0',
+                      zIndex: 1,
+                      marginBottom: '10px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <h3 className="section-title">返程航班</h3>
+                      {selectedFlights.inbound && selectedCabins.inbound && (
+                        <div style={{
+                          fontSize: '14px',
+                          color: '#666'
+                        }}>
+                          已选择: {selectedFlights.inbound.flightNumber} - {selectedCabins.inbound.name} - ¥{selectedCabins.inbound.price.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                    <FlightList
+                      flights={filteredFlights.inbound}
+                      loading={loading}
+                      onBook={(flight, cabin) => handleFlightSelect(flight, 'inbound', cabin)}
+                      currentPage={pagination.inbound.current}
+                      pageSize={pagination.inbound.pageSize}
+                      totalElements={pagination.inbound.total}
+                      onPageChange={handlePageChange}
+                      onPageSizeChange={handlePageSizeChange}
+                      cities={cities}
+                      searchDate={searchParams?.returnDate}
+                      selectedFlight={selectedFlights.inbound}
+                      selectedCabin={selectedCabins.inbound}
+                      isRoundTrip={isRoundTrip}
+                    />
+                  </div>
+                </div>
               ) : (
-                <>
-                  <h3 className="section-title">航班列表</h3>
+                <div
+                  style={{
+                    maxHeight: 'calc(100vh - 180px)',
+                    overflowY: 'auto',
+                    paddingRight: '10px'
+                  }}
+                >
+                  <div style={{
+                    position: 'sticky',
+                    top: 0,
+                    backgroundColor: '#fff',
+                    padding: '10px 0',
+                    zIndex: 1,
+                    marginBottom: '10px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <h3 className="section-title">航班列表</h3>
+                    {selectedFlights.outbound && selectedCabins.outbound && (
+                      <div style={{
+                        fontSize: '14px',
+                        color: '#666'
+                      }}>
+                        已选择: {selectedFlights.outbound.flightNumber} - {selectedCabins.outbound.name} - ¥{selectedCabins.outbound.price.toFixed(2)}
+                      </div>
+                    )}
+                  </div>
                   <FlightList
                     flights={filteredFlights.outbound}
                     loading={loading}
-                    onBook={handleFlightSelect}
+                    onBook={(flight, cabin) => handleFlightSelect(flight, 'outbound', cabin)}
                     currentPage={pagination.outbound.current}
                     pageSize={pagination.outbound.pageSize}
                     totalElements={pagination.outbound.total}
@@ -582,8 +854,12 @@ const FlightSearch = ({ onLoginClick = () => {} }) => {
                     onPageSizeChange={handlePageSizeChange}
                     cities={cities}
                     searchDate={searchParams?.departureDate}
+                    isReturnFlight={false}
+                    selectedFlight={selectedFlights.outbound}
+                    selectedCabin={selectedCabins.outbound}
+                    isRoundTrip={isRoundTrip}
                   />
-                </>
+                </div>
               )}
             </div>
           </div>

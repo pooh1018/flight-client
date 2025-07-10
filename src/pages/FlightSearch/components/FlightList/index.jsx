@@ -17,6 +17,9 @@ import './index.scss';
  * @param {Function} props.onPageSizeChange - 每页条数变化回调
  * @param {Array} props.cities - 城市和机场数据列表
  * @param {Date|string} props.searchDate - 检索框中的出发日期
+ * @param {Object} props.selectedFlight - 已选择的航班
+ * @param {Object} props.selectedCabin - 已选择的舱位
+ * @param {boolean} props.isRoundTrip - 是否为往返行程
  * @returns {JSX.Element} 航班列表组件
  */
 const FlightList = ({
@@ -30,7 +33,11 @@ const FlightList = ({
   onPageChange,
   onPageSizeChange,
   cities = [],
-  searchDate
+  searchDate,
+  isReturnFlight = false,
+  selectedFlight = null,
+  selectedCabin = null,
+  isRoundTrip = false
 }) => {
   // 本地分页状态
   const [localPagination, setLocalPagination] = useState({
@@ -138,10 +145,10 @@ const FlightList = ({
         stops: stopsArray,
         duration: calculateDuration(flight.departureTime, flight.arrivalTime),
         cabinClass: lowestPriceCabin ? lowestPriceCabin.name : "Economy",
-        seatsAvailable: lowestPriceCabin ? 
+        seatsAvailable: lowestPriceCabin ?
           // 如果当前舱位座位数不足，显示下一个舱位
-          (lowestPriceCabin.availableSeats > 0 ? 
-            lowestPriceCabin.availableSeats : 
+          (lowestPriceCabin.availableSeats > 0 ?
+            lowestPriceCabin.availableSeats :
             // 查找下一个有座位的舱位
             cabins.find(cabin => cabin.availableSeats > 0)?.availableSeats || 0
           ) : 0,
@@ -150,8 +157,11 @@ const FlightList = ({
         tags: [
           { text: flight.status === 'scheduled' ? '准点' : '延误', type: flight.status === 'scheduled' ? 'info' : 'danger' },
           lowestPriceCabin && lowestPriceCabin.availableSeats < 10 ? { text: '余票紧张', type: 'danger' } : null,
-          flight.stops === 0 ? { text: '直飞', type: 'primary' } : null,
-          { text: `${cabins.length}种舱位可选`, type: 'info' }
+          // flight.stops === 0 ? { text: '直飞', type: 'primary' } : null,
+          {
+            text: `${cabins.filter(cabin => cabin.availableSeats > 0).length}种舱位可选`,
+            type: 'primary'
+          }
         ].filter(Boolean)
       };
     });
@@ -356,9 +366,13 @@ const FlightList = ({
         <FlightCard
           key={key}
           flight={flight}
+          isReturnFlight={isReturnFlight}
           onSelect={onBook}
           onLoginClick={onLoginClick}
           searchDate={searchDate}
+          isSelected={selectedFlight && selectedFlight.id === flight.id}
+          selectedCabin={selectedFlight && selectedFlight.id === flight.id ? selectedCabin : null}
+          isRoundTrip={isRoundTrip}
         />
       );
     });

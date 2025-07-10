@@ -118,6 +118,16 @@ export const CABIN_CLASSES = [
 ];
 
 /**
+ * 舱位类型中文映射
+ */
+export const CABIN_CLASS_MAP = {
+  '1': '经济舱',
+  '2': '高级经济舱',
+  '3': '商务舱',
+  '4': '头等舱'
+};
+
+/**
  * 支付方式
  */
 export const PAYMENT_METHODS = [

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Checkbox, FormItem } from '@/components/ui';
+import { Form, Input, Button, Checkbox } from '@/components/ui';
 import { encrypt } from "@/utils/rsaEncrypt";
 import './AuthForm.css';
 
@@ -8,12 +8,12 @@ const emailRules = [
   {
     required: true,
     message: '请输入邮箱',
-    trigger: 'onBlur'
+    trigger: ['onBlur', 'onChange', 'onSubmit']
   },
   {
     type: 'email',
     message: '请输入有效的邮箱地址',
-    trigger: 'onBlur'
+    trigger: ['onBlur', 'onChange', 'onSubmit']
   }
 ];
 
@@ -22,17 +22,17 @@ const passwordRules = [
   {
     required: true,
     message: '请输入密码',
-    trigger: 'onBlur'
+    trigger: ['onBlur', 'onChange', 'onSubmit']
   },
   {
     min: 6,
     message: '密码长度不能小于6位',
-    trigger: 'onBlur'
+    trigger: ['onBlur', 'onChange', 'onSubmit']
   },
   {
     pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,20}$/,
     message: '密码必须包含大小写字母和数字，长度6-20位',
-    trigger: 'onBlur'
+    trigger: ['onBlur', 'onChange', 'onSubmit']
   },
 ];
 
@@ -56,6 +56,16 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
 
   const handleSubmit = async (values) => {
     try {
+      // 严格验证所有字段
+      await formInstance.validateFields(['username', 'password']);
+      
+      // 检查字段是否为空
+      if (!values.username || !values.password) {
+        throw new Error('用户名或密码不能为空');
+      }
+      
+      console.log('表单验证通过:', values);
+      
       setLoading(true);
 
       // 确保值是字符串类型
@@ -111,8 +121,21 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
         layout="vertical"
         className="auth-form__form"
         onFinish={handleSubmit}
+        onFinishFailed={({ errorFields }) => {
+          console.log('表单验证失败:', errorFields);
+          // 添加错误提示动画
+          errorFields.forEach(({ name }) => {
+            const input = document.querySelector(`[name="${name}"]`);
+            if (input) {
+              input.classList.add('shake-animation');
+              setTimeout(() => {
+                input.classList.remove('shake-animation');
+              }, 500);
+            }
+          });
+        }}
       >
-        <FormItem
+        <Form.Item
           label="邮箱"
           name="username"
           rules={emailRules}
@@ -122,9 +145,9 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
             autoComplete="username"
             className="username-input"
           />
-        </FormItem>
+        </Form.Item>
 
-        <FormItem
+        <Form.Item
           label="密码"
           name="password"
           rules={passwordRules}
@@ -134,14 +157,14 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
             autoComplete="current-password"
             className="password-input"
           />
-        </FormItem>
+        </Form.Item>
 
         <div className="auth-form__options">
-          <FormItem name="rememberMe" valuePropName="checked">
+          <Form.Item name="rememberMe" valuePropName="checked">
             <Checkbox>
               记住我
             </Checkbox>
-          </FormItem>
+          </Form.Item>
           <Button
             type="text"
             onClick={onForgotPassword}
@@ -151,7 +174,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
           </Button>
         </div>
 
-        <FormItem>
+        <Form.Item>
           <Button
             type="primary"
             loading={loading}
@@ -161,7 +184,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
           >
             登录
           </Button>
-        </FormItem>
+        </Form.Item>
 
         <div className="login-link">
           还没有账号？

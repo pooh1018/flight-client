@@ -10,7 +10,7 @@ import {
 } from '@/services/bookingApi';
 import flightApi from '@/services/flightApi';
 import { formatDate } from '@/utils/formatters';
-import { CABIN_CLASSES } from '@/config';
+import { CABIN_CLASSES, CABIN_CLASS_MAP } from '@/config';
 import { fetchAirportData } from '@/config/index';
 import './index.scss';
 
@@ -255,15 +255,10 @@ const MyBookings = () => {
       key: 'passengerAndCabin',
       dataIndex: 'cabinClassType',
       render: (_, record) => {
-        const cabinClassMap = {
-          '1': '经济舱',
-          '2': '高级经济舱',
-          '3': '商务舱',
-          '4': '头等舱'
-        };
+
 
         const cabinClass = CABIN_CLASSES.find(cabin => cabin.value === String(record.cabinClassType));
-        const cabinName = cabinClass ? cabinClassMap[cabinClass.value] : `未知(${record.cabinClassType})`;
+        const cabinName = cabinClass ? CABIN_CLASS_MAP[cabinClass.value] : `未知(${record.cabinClassType})`;
 
         return (
           <div className="passenger-cabin-info">

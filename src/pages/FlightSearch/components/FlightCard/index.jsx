@@ -1,21 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Tag, Tooltip, Collapse } from '@/components/ui';
-import {AIRLINE_LOGO_PATH, getAirlineByCode} from '@/config';
-import {formatPrice, formatTime, formatDuration, formatDate} from '@/utils/formatters';
-import { useAuthContext } from '@/contexts/AuthContext';
-import { useModal } from '@/contexts/ModalContext';
+import { AIRLINE_LOGO_PATH, getAirlineByCode } from '@/config';
+import { formatPrice, formatTime, formatDuration, formatDate } from '@/utils/formatters';
 import './index.scss';
 
 /**
  * 航班卡片组件
  * @param {Object} props - 组件属性
  * @param {Object} props.flight - 航班信息
+ * @param {boolean} props.isReturnFlight - 是否是回程航班
  * @param {Function} props.onSelect - 选择航班回调
+ * @param {Object} props.selectedCabin - 已选择的舱位信息
+ * @param {Function} props.onLoginClick - 登录点击回调
  * @param {Date|string} props.searchDate - 检索框中的出发日期
+ * @param {boolean} props.isSelected - 是否被选中
+ * @param {boolean} props.isRoundTrip - 是否是往返行程
  * @returns {JSX.Element} 航班卡片组件
  */
-const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick, searchDate }) => {
+const FlightCard = ({
+  flight,
+  isReturnFlight = false,
+  onSelect,
+  selectedCabin,
+  onLoginClick,
+  searchDate,
+  isSelected = false,
+  isRoundTrip = false
+}) => {
 
   const navigate = useNavigate();
   // 添加状态来跟踪是否展开舱位选择面板
@@ -23,8 +35,17 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick, searchDate 
   // 当前选中的舱位ID和舱位信息
   const [selectedCabinId, setSelectedCabinId] = useState(selectedCabin?.id || null);
   const [selectedCabinInfo, setSelectedCabinInfo] = useState(selectedCabin || null);
-  const { showModal } = useModal();
-  const { user } = useAuthContext();
+
+  // 监听selectedCabin属性的变化，更新组件内部状态
+  useEffect(() => {
+    if (selectedCabin) {
+      setSelectedCabinId(selectedCabin.id);
+      setSelectedCabinInfo(selectedCabin);
+    } else {
+      setSelectedCabinId(null);
+      setSelectedCabinInfo(null);
+    }
+  }, [selectedCabin]);
 
   // 检查所有舱位是否都已售罄
   const allCabinsSoldOut = flight.cabins && flight.cabins.length > 0 &&
@@ -107,7 +128,27 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick, searchDate 
   };
 
   return (
-    <Card className="flight-card">
+    <Card
+      className={`flight-card ${isSelected ? 'selected-flight' : ''}`}
+      style={{
+        border: isSelected ? '2px solid #1890ff' : '1px solid #e8e8e8',
+        boxShadow: isSelected ? '0 0 10px rgba(24, 144, 255, 0.3)' : 'none'
+      }}
+      onClick={(e) => {
+        // 检查点击是否发生在舱位选择面板内
+        const isClickInCabinPanel = e.target.closest('.cabin-selection');
+        // 检查点击是否发生在按钮上
+        const isClickOnButton = e.target.closest('button');
+        
+        // 如果点击在舱位面板内或按钮上，不处理
+        if (isClickInCabinPanel || isClickOnButton) return;
+        
+        // 切换展开/收起状态
+        if (flight.cabins && flight.cabins.length > 0) {
+          setShowCabins(!showCabins);
+        }
+      }}
+    >
         {/* 日期不一致提示 */}
         {isDifferentDate() && (
           <div className="date-notice" style={{
@@ -163,7 +204,7 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick, searchDate 
         </div>
 
         {/* 航班信息 */}
-        <div className="flight-info">
+        <div className="flight-info" style={{ flex: '1 1 auto', minWidth: '60px' }}>
           <div className="duration">
             <span>{duration ? formatDuration(duration) : '未知'}</span>
           </div>
@@ -281,87 +322,8 @@ const FlightCard = ({ flight, onSelect, selectedCabin, onLoginClick, searchDate 
                 ? (showCabins ? '收起' : (allCabinsSoldOut ? '全部售罄' : '选择舱位'))
                 : (seatsAvailable !== undefined ? (seatsAvailable > 0 ? '选择' : '已售罄') : '选择')}
             </Button>
-            <Button
-              type="primary"
-              size="small"
-              disabled={allCabinsSoldOut}
-              onClick={() => {
-                // 检查登录状态
-                console.log(user);
-                if (!user) {
-                  // 调用Header的登录方法，并标记来自FlightCard
-                  if (onLoginClick) {
-                    onLoginClick({
-                      from: 'flightCard',
-                        flightInfo: {
-                        flightId: flight.id,
-                        departure: flight.departureCity,
-                        arrival: flight.arrivalCity,
-                        departureLabel: flight.departureAirportLabel,
-                        arrivalLabel: flight.arrivalAirportLabel,
-                        date: flight.departureTime,
-                        // hasCabins: flight.cabins && flight.cabins.length > 0,
-                        CabinsClass: selectedCabinInfo,
-                        user,
-                        airline: flight.airline,
-                        flightNumber: flight.flightNumber,
-                        departureTime: flight.departureTime ? formatDate(flight.departureTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
-                        arrivalTime: flight.arrivalTime ? formatDate(flight.arrivalTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
-                        duration: flight.duration
-                      }
-                    });
-                  } else {
-                    showModal(
-                        '尚未登录',
-                        '请登录后预定',
-                        {
-                            onConfirm: () => {},
-                            confirmText: '确定',
-                            width: 400,
-                            maskClosable: false, // 不允许点击遮罩层关闭
-                        });
-                  }
-                } else {
-                  // 检查是否选择了仓位
-                  if (flight.cabins && flight.cabins.length > 0 && !selectedCabinId) {
-                    showModal(
-                        '请选择舱位',
-                        '请先选择舱位后再进行预定',
-                        {
-                            onConfirm: () => {}, // 使用 onConfirm 而不是 onCancel
-                            confirmText: '确定', // 使用 confirmText 而不是 cancelText
-                            width: 400,
-                            maskClosable: false, // 不允许点击遮罩层关闭
-                        });
-                    return;
-                  }
+            {/* 移除了"立即预定"按钮，因为已在FlightSearch组件中添加了统一的预订按钮 */}
 
-                  // 已登录且选择了仓位，跳转到预定确认页
-                  navigate('/my-bookings/detail', {
-                    state: {
-                        flightInfo: {
-                            flightId: flight.id,
-                            departure: flight.departureCity,
-                            arrival: flight.arrivalCity,
-                            departureLabel: flight.departureAirportLabel,
-                            arrivalLabel: flight.arrivalAirportLabel,
-                            date: flight.departureTime,
-                            // hasCabins: flight.cabins && flight.cabins.length > 0,
-                            CabinsClass: selectedCabinInfo,
-                            user,
-                            airline: flight.airline,
-                            flightNumber: flight.flightNumber,
-                            departureTime: flight.departureTime ? formatDate(flight.departureTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
-                            arrivalTime: flight.arrivalTime ? formatDate(flight.arrivalTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
-                            duration: flight.duration
-                        }
-                    }
-                  });
-                }
-              }}
-            >
-              立即预定
-            </Button>
           </div>
       </div>
 

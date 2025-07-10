@@ -12,11 +12,13 @@ import './index.scss';
 const BookingDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const flightInfo = location.state?.flightInfo;
+  const { outboundFlight, inboundFlight } = location.state || {};
+  const isRoundTrip = !!inboundFlight;
+  const flightInfo = outboundFlight || location.state?.flightInfo;
   // console.log('flightInfo', flightInfo);
   const [passengerList, setPassengerList] = useState([]);
   const [selectedPassengers, setSelectedPassengers] = useState([]);
-  const [passengerCount, setPassengerCount] = useState(1);
+  const [passengerCount, setPassengerCount] = useState(0);
   const [passengers, setPassengers] = useState(
     Array(9).fill({
       firstName: '',
@@ -25,7 +27,7 @@ const BookingDetail = () => {
       phone: ''
     })
   );
-  const [totalPrice, setTotalPrice] = useState(flightInfo?.price || 0);
+  const [totalPrice, setTotalPrice] = useState(0);
   const [form] = Form.useForm();
   const [passengerForm] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -35,10 +37,14 @@ const BookingDetail = () => {
   const [passengerToDelete, setPassengerToDelete] = useState(null);
 
   useEffect(() => {
-    if (flightInfo?.price) {
-      setTotalPrice(flightInfo.CabinsClass.price * passengerCount);
+    if (flightInfo?.CabinsClass?.price) {
+      if (isRoundTrip && inboundFlight?.CabinsClass?.price) {
+        setTotalPrice((flightInfo.CabinsClass.price + inboundFlight.CabinsClass.price) * passengerCount);
+      } else {
+        setTotalPrice(flightInfo.CabinsClass.price * passengerCount);
+      }
     }
-  }, [passengerCount, flightInfo?.price]);
+  }, [passengerCount, flightInfo?.CabinsClass?.price, inboundFlight?.CabinsClass?.price, isRoundTrip]);
 
   const handlePassengerChange = (index, field, value) => {
     const newPassengers = [...passengers];
@@ -49,21 +55,25 @@ const BookingDetail = () => {
     setPassengers(newPassengers);
   };
 
-  const removePassenger = (index) => {
-    if (passengerCount > 1) {
-      const newPassengers = [...passengers];
-      newPassengers.splice(index, 1);
-      newPassengers.push({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: ''
-      });
-      setPassengers(newPassengers);
-      setPassengerCount(passengerCount - 1);
-      setTotalPrice(flightInfo.CabinsClass.price * (passengerCount - 1));
-    }
-  };
+  // const removePassenger = (index) => {
+  //   if (passengerCount > 1) {
+  //     const newPassengers = [...passengers];
+  //     newPassengers.splice(index, 1);
+  //     newPassengers.push({
+  //       firstName: '',
+  //       lastName: '',
+  //       email: '',
+  //       phone: ''
+  //     });
+  //     setPassengers(newPassengers);
+  //     setPassengerCount(passengerCount - 1);
+  //     if (isRoundTrip && inboundFlight?.CabinsClass?.price) {
+  //       setTotalPrice((flightInfo.CabinsClass.price + inboundFlight.CabinsClass.price) * passengerCount);
+  //     } else {
+  //       setTotalPrice(flightInfo.CabinsClass.price * passengerCount);
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     if (!flightInfo) {
@@ -95,19 +105,32 @@ const BookingDetail = () => {
     setSelectedPassengers(prev => {
       if (prev.includes(passengerId)) {
         const newSelected = prev.filter(id => id !== passengerId);
-        setTotalPrice(flightInfo.CabinsClass.price * newSelected.length);
+        if (isRoundTrip && inboundFlight?.CabinsClass?.price) {
+          setTotalPrice((flightInfo.CabinsClass.price + inboundFlight.CabinsClass.price) * newSelected.length);
+        } else {
+          setTotalPrice(flightInfo.CabinsClass.price * newSelected.length);
+        }
         return newSelected;
       } else {
         if (prev.length >= 9) {
           Message.warning('最多只能选择9位乘客');
           return prev;
         }
-        if (prev.length >= flightInfo?.CabinsClass.availableSeats) {
-          Message.warning('余票不足，只能选择'+flightInfo?.CabinsClass.availableSeats+'位乘客');
+        // 检查去程和回程的余票
+        const outboundAvailable = flightInfo?.CabinsClass.availableSeats || 0;
+        const inboundAvailable = isRoundTrip ? (inboundFlight?.CabinsClass.availableSeats || 0) : Infinity;
+        const minAvailableSeats = Math.min(outboundAvailable, inboundAvailable);
+
+        if (prev.length >= minAvailableSeats) {
+          Message.warning(`余票不足，只能选择${minAvailableSeats}位乘客`);
           return prev;
         }
         const newSelected = [...prev, passengerId];
-        setTotalPrice(flightInfo.CabinsClass.price * newSelected.length);
+        if (isRoundTrip && inboundFlight?.CabinsClass?.price) {
+          setTotalPrice((flightInfo.CabinsClass.price + inboundFlight.CabinsClass.price) * newSelected.length);
+        } else {
+          setTotalPrice(flightInfo.CabinsClass.price * newSelected.length);
+        }
         return newSelected;
       }
     });
@@ -141,7 +164,12 @@ const BookingDetail = () => {
         const newSelectedPassengers = selectedPassengers.filter(id => id !== passengerToDelete);
         setPassengerList(newPassengerList);
         setSelectedPassengers(newSelectedPassengers);
-        setTotalPrice(flightInfo.CabinsClass.price * newSelectedPassengers.length);
+        // 更新总价
+        if (isRoundTrip && inboundFlight?.CabinsClass?.price) {
+          setTotalPrice((flightInfo.CabinsClass.price + inboundFlight.CabinsClass.price) * newSelectedPassengers.length);
+        } else {
+          setTotalPrice(flightInfo.CabinsClass.price * newSelectedPassengers.length);
+        }
       } else {
         Message.error('删除乘客失败');
       }
@@ -222,11 +250,27 @@ const BookingDetail = () => {
       Message.warning('最多只能选择9位乘客');
       return;
     }
+
+    // 检查去程和回程的余票
+    const outboundAvailable = flightInfo?.CabinsClass.availableSeats || 0;
+    const inboundAvailable = isRoundTrip ? (inboundFlight?.CabinsClass.availableSeats || 0) : Infinity;
+    const minAvailableSeats = Math.min(outboundAvailable, inboundAvailable);
+
+    if (value.length > minAvailableSeats) {
+      Message.warning(`余票不足，只能选择${minAvailableSeats}位乘客`);
+      return;
+    }
+
     setSelectedPassengers(value);
+    // 更新总价
+    if (isRoundTrip && inboundFlight?.CabinsClass?.price) {
+      setTotalPrice((flightInfo.CabinsClass.price + inboundFlight.CabinsClass.price) * value.length);
+    } else {
+      setTotalPrice(flightInfo.CabinsClass.price * value.length);
+    }
   };
 
   const handleSubmit = async (values) => {
-
     const allPassengers = [
       ...selectedPassengers.map(passenger => ({
         passengerId: passenger,
@@ -234,52 +278,92 @@ const BookingDetail = () => {
       }))
     ];
 
-    // console.log("allPassengers", allPassengers.length);
     if (allPassengers.length === 0) {
       Message.error('请至少添加一位乘客');
       return;
     }
 
-    // console.log("flightInfo?.CabinsClass.cabinClassType", flightInfo);
-    const bookingData = {
-      flightId: flightInfo?.flightId || '',
-      passengers: allPassengers,
-      totalPrice: totalPrice.toFixed(2),
-      status: 'PENDING',
-      paymentMethod: 'CREDIT_CARD',
-      cabinClassType: flightInfo?.CabinsClass.classType || 1,
-      contactEmail: values.contactEmail || '',
-      contactPhone: values.contactPhone || ''
-    };
-
     try {
-      // console.log("bookingData", bookingData);
-      const response = await createBooking(bookingData);
-      // console.log("response", response);
-      if (response.success) {
-        Message.success('预订成功');
+      if (isRoundTrip) {
+        // 处理往返航班预订
+        const outboundBookingData = {
+          flightId: flightInfo?.flightId || '',
+          passengers: allPassengers,
+          totalPrice: (flightInfo?.CabinsClass.price * allPassengers.length).toFixed(2),
+          status: 'PENDING',
+          paymentMethod: 'CREDIT_CARD',
+          cabinClassType: flightInfo?.CabinsClass.classType || 1,
+          contactEmail: values.contactEmail || '',
+          contactPhone: values.contactPhone || ''
+        };
 
-        // 导航到成功页面并传递订单信息
+        const inboundBookingData = {
+          flightId: inboundFlight?.flightId || '',
+          passengers: allPassengers,
+          totalPrice: (inboundFlight?.CabinsClass.price * allPassengers.length).toFixed(2),
+          status: 'PENDING',
+          paymentMethod: 'CREDIT_CARD',
+          cabinClassType: inboundFlight?.CabinsClass.classType || 1,
+          contactEmail: values.contactEmail || '',
+          contactPhone: values.contactPhone || ''
+        };
+
+        // 创建去程订单
+        const outboundResponse = await createBooking(outboundBookingData);
+        if (!outboundResponse.success) {
+          Message.error(outboundResponse.message || '去程航班预订失败');
+          return;
+        }
+
+        // 创建返程订单
+        const inboundResponse = await createBooking(inboundBookingData);
+        if (!inboundResponse.success) {
+          Message.error(inboundResponse.message || '返程航班预订失败');
+          return;
+        }
+
+        Message.success('往返航班预订成功');
+
+        // 导航到成功页面并传递两个订单信息
         navigate('/my-bookings/success', {
           state: {
-            order: response.data,
-            flightInfo: flightInfo
+            orders: [outboundResponse.data, inboundResponse.data],
+            flightInfo: flightInfo,
+            inboundFlight: inboundFlight,
+            isRoundTrip: true
           }
         });
       } else {
-        // 处理API返回的错误信息
-        const errorMsg = response.message || '预订失败，请重试';
-        Message.error(errorMsg);
+        // 处理单程航班预订
+        const bookingData = {
+          flightId: flightInfo?.flightId || '',
+          passengers: allPassengers,
+          totalPrice: totalPrice.toFixed(2),
+          status: 'PENDING',
+          paymentMethod: 'CREDIT_CARD',
+          cabinClassType: flightInfo?.CabinsClass.classType || 1,
+          contactEmail: values.contactEmail || '',
+          contactPhone: values.contactPhone || ''
+        };
+
+        const response = await createBooking(bookingData);
+        if (response.success) {
+          Message.success('预订成功');
+          navigate('/my-bookings/success', {
+            state: {
+              order: response.data,
+              flightInfo: flightInfo
+            }
+          });
+        } else {
+          Message.error(response.message || '预订失败，请重试');
+        }
       }
     } catch (error) {
       console.error('预订失败:', error);
-      // 处理异常情况，可能是网络错误或服务器错误
       if (error.response && error.response.data) {
-        // 如果错误对象包含服务器返回的错误信息
-        const serverError = error.response;
-        Message.error(serverError.message || '预订失败，请重试');
+        Message.error(error.response.data.message || '预订失败，请重试');
       } else {
-        // 其他错误情况
         Message.error('预订失败，请检查网络连接后重试');
       }
     }
@@ -292,62 +376,128 @@ const BookingDetail = () => {
 
         <div className="flight-info">
           <h2 className="section-title">航班信息</h2>
-          <div className="flight-card">
-            <div className="flight-header">
-              <div className="flight-number">
-                <span className="label">航班号</span>
-                <span className="value">{flightInfo?.flightNumber}</span>
+          <div className={isRoundTrip ? "round-trip-flights" : ""}>
+            {/* 去程航班 */}
+            <div className="flight-card">
+              <h3 className="flight-title">去程航班</h3>
+              <div className="flight-header">
+                <div className="flight-number">
+                  <span className="label">航班号</span>
+                  <span className="value">{flightInfo?.flightNumber}</span>
+                </div>
+                <div className="cabin-class">
+                  <span className="label">舱位
+                    {flightInfo?.CabinsClass.availableSeats < 10 && flightInfo?.CabinsClass.classType === 1 && (
+                        <span className="cabin-class-tags"
+                              style={{display: 'inline-flex', gap: '8px', marginLeft: '8px'}}>
+                          <Tag
+                              type="danger"
+                              size="default"
+                          >
+                            余票紧张
+                          </Tag>
+                        </span>
+                    )}
+                  </span>
+                  <span className="value">
+                    {flightInfo?.CabinsClass.name}
+                  </span>
+                  <span style={{fontSize: '14px', display: 'inline-flex', gap: '8px', marginLeft: '8px'}}>
+                    (剩余: {flightInfo?.CabinsClass.availableSeats}张)
+                  </span>
+                </div>
+                <div className="price-item">
+                  <span className="label">票价</span>
+                  <span className="value">¥{flightInfo?.CabinsClass.price}</span>
+                </div>
               </div>
-              <div className="cabin-class">
-                <span className="label">舱位
-                  {flightInfo?.CabinsClass.availableSeats < 10 && flightInfo?.CabinsClass.classType === 1 && (
-                      <span className="cabin-class-tags" style={{display: 'inline-flex', gap: '8px', marginLeft: '8px' }}>
-                        <Tag
-                            type="danger"
-                            size="default"
-                        >
-                          余票紧张
-                        </Tag>
-                      </span>
-                  )}
-                </span>
-                <span className="value">
-                  {flightInfo?.CabinsClass.name}
-                </span>
-                <span style={{ fontSize: '14px', display: 'inline-flex', gap: '8px', marginLeft: '8px' }}>
-                  (剩余: {flightInfo?.CabinsClass.availableSeats}张)
-                </span>
-              </div>
-              <div className="price-item">
-                <span className="label">票价</span>
-                <span className="value">¥{flightInfo?.CabinsClass.price}</span>
+
+              <div className="flight-route">
+                <div className="departure">
+                  <div className="city">{flightInfo?.departure}</div>
+                  <div className="time">{formatDate(flightInfo?.departureTime, 'HH:mm')}</div>
+                  <div className="date">{formatDate(flightInfo?.departureTime, 'YYYY-MM-DD')}</div>
+                </div>
+
+                <div className="route-line">
+                  <div className="arrow">⟶</div>
+                </div>
+
+                <div className="arrival">
+                  <div className="city">{flightInfo?.arrival}</div>
+                  <div className="time">{formatDate(flightInfo?.arrivalTime, 'HH:mm')}</div>
+                  <div className="date">{formatDate(flightInfo?.arrivalTime, 'YYYY-MM-DD')}</div>
+                </div>
               </div>
             </div>
 
-            <div className="flight-route">
-              <div className="departure">
-                <div className="city">{flightInfo?.departure}</div>
-                <div className="time">{formatDate(flightInfo?.departureTime, 'HH:mm')}</div>
-                <div className="date">{formatDate(flightInfo?.departureTime, 'YYYY-MM-DD')}</div>
-              </div>
+            {/* 返程航班 */}
+            {isRoundTrip && (
+                <div className="flight-card">
+                  <h3 className="flight-title">返程航班</h3>
+                  <div className="flight-header">
+                    <div className="flight-number">
+                      <span className="label">航班号</span>
+                      <span className="value">{inboundFlight?.flightNumber}</span>
+                    </div>
+                    <div className="cabin-class">
+                    <span className="label">舱位
+                      {inboundFlight?.CabinsClass.availableSeats < 10 && inboundFlight?.CabinsClass.classType === 1 && (
+                          <span className="cabin-class-tags"
+                                style={{display: 'inline-flex', gap: '8px', marginLeft: '8px'}}>
+                            <Tag
+                                type="danger"
+                                size="default"
+                            >
+                              余票紧张
+                            </Tag>
+                          </span>
+                      )}
+                    </span>
+                      <span className="value">
+                      {inboundFlight?.CabinsClass.name}
+                    </span>
+                      <span style={{fontSize: '14px', display: 'inline-flex', gap: '8px', marginLeft: '8px'}}>
+                      (剩余: {inboundFlight?.CabinsClass.availableSeats}张)
+                    </span>
+                    </div>
+                    <div className="price-item">
+                      <span className="label">票价</span>
+                      <span className="value">¥{inboundFlight?.CabinsClass.price}</span>
+                    </div>
+                  </div>
 
-              <div className="route-line">
-                <div className="arrow">⟶</div>
-              </div>
+                  <div className="flight-route">
+                    <div className="departure">
+                      <div className="city">{inboundFlight?.departure}</div>
+                      <div className="time">{formatDate(inboundFlight?.departureTime, 'HH:mm')}</div>
+                      <div className="date">{formatDate(inboundFlight?.departureTime, 'YYYY-MM-DD')}</div>
+                    </div>
 
-              <div className="arrival">
-                <div className="city">{flightInfo?.arrival}</div>
-                <div className="time">{formatDate(flightInfo?.arrivalTime, 'HH:mm')}</div>
-                <div className="date">{formatDate(flightInfo?.arrivalTime, 'YYYY-MM-DD')}</div>
-              </div>
-            </div>
+                    <div className="route-line">
+                      <div className="arrow">⟶</div>
+                    </div>
 
-            <div className="flight-price">
-              <div className="price-item total">
-                <span className="label">总价</span>
-                <span className="value">¥{totalPrice.toFixed(2)}</span>
-              </div>
-            </div>
+                    <div className="arrival">
+                      <div className="city">{inboundFlight?.arrival}</div>
+                      <div className="time">{formatDate(inboundFlight?.arrivalTime, 'HH:mm')}</div>
+                      <div className="date">{formatDate(inboundFlight?.arrivalTime, 'YYYY-MM-DD')}</div>
+                    </div>
+                  </div>
+                </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flight-price" style={{
+          margin: '20px 0',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          textAlign: 'right'
+        }}>
+          <div className="price-item total">
+            <span className="label">总价：</span>
+            <span className="value" style={{color: '#ff4d4f'}}>¥{totalPrice.toFixed(2)}</span>
           </div>
         </div>
 
@@ -366,7 +516,7 @@ const BookingDetail = () => {
                   >
                     <div className="card-header">
                       {passenger.passengerUserId === flightInfo.user.userId && (
-                        <span className="self-tag">本人</span>
+                          <span className="self-tag">本人</span>
                       )}
                       <div className="name-container">
                         <h5>{passenger.firstName} {passenger.lastName}</h5>
@@ -424,7 +574,7 @@ const BookingDetail = () => {
             <div className="contact-info-container">
               <div className="contact-info-item">
                 <DecorativeIcon>
-                  <PhoneIcon />
+                  <PhoneIcon/>
                 </DecorativeIcon>
                 <Form.Item
                     name="contactPhone"
@@ -436,7 +586,7 @@ const BookingDetail = () => {
 
               <div className="contact-info-item">
                 <DecorativeIcon>
-                  <EmailIcon />
+                  <EmailIcon/>
                 </DecorativeIcon>
                 <Form.Item
                     name="contactEmail"
@@ -453,7 +603,7 @@ const BookingDetail = () => {
               确认预订
             </Button>
             <Button
-              onClick={() => navigate('/flightSearch')}
+                onClick={() => navigate('/flightSearch')}
             >
               返回航班搜索
             </Button>
@@ -473,82 +623,82 @@ const BookingDetail = () => {
         </Modal>
 
         <Modal
-          title={isEditing ? "编辑乘客信息" : "添加新乘客"}
-          visible={isModalVisible}
-          onConfirm={handleModalOk}
-          onCancel={handleModalCancel}
-          confirmText="确定"
-          cancelText="取消"
-          width={600}
-          className="enhanced-modal"
+            title={isEditing ? "编辑乘客信息" : "添加新乘客"}
+            visible={isModalVisible}
+            onConfirm={handleModalOk}
+            onCancel={handleModalCancel}
+            confirmText="确定"
+            cancelText="取消"
+            width={600}
+            className="enhanced-modal"
         >
           <Form
-            form={passengerForm}
-            layout="vertical"
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}
-            initialValues={{
-              idType: 'ID_CARD' // 默认选择身份证
-            }}
-            className="passenger-form"
+              form={passengerForm}
+              layout="vertical"
+              labelCol={{span: 6}}
+              wrapperCol={{span: 18}}
+              initialValues={{
+                idType: 'ID_CARD' // 默认选择身份证
+              }}
+              className="passenger-form"
           >
-            <div style={{ display: 'flex', gap: '16px' }}>
+            <div style={{display: 'flex', gap: '16px'}}>
               <Form.Item
-                name="firstName"
-                label="名"
-                rules={[{ required: true, message: '请输入名字' }]}
-                style={{ flex: 1 }}
+                  name="firstName"
+                  label="名"
+                  rules={[{required: true, message: '请输入名字'}]}
+                  style={{flex: 1}}
               >
-                <Input placeholder="请输入名字" />
+                <Input placeholder="请输入名字"/>
               </Form.Item>
               <Form.Item
-                name="lastName"
-                label="姓"
-                rules={[{ required: true, message: '请输入姓氏' }]}
-                style={{ flex: 1 }}
+                  name="lastName"
+                  label="姓"
+                  rules={[{required: true, message: '请输入姓氏'}]}
+                  style={{flex: 1}}
               >
-                <Input placeholder="请输入姓氏" />
+                <Input placeholder="请输入姓氏"/>
               </Form.Item>
             </div>
 
-            <div style={{ display: 'flex', gap: '16px' }}>
+            <div style={{display: 'flex', gap: '16px'}}>
               {/*<DecorativeIcon>*/}
               {/*  <EmailIcon />*/}
               {/*</DecorativeIcon>*/}
               <Form.Item
-                name="email"
-                label="邮箱"
-                rules={[
-                  { required: true, message: '请输入邮箱' },
-                  { type: 'email', message: '请输入有效的邮箱地址' }
-                ]}
-                style={{ flex: 1 }}
+                  name="email"
+                  label="邮箱"
+                  rules={[
+                    {required: true, message: '请输入邮箱'},
+                    {type: 'email', message: '请输入有效的邮箱地址'}
+                  ]}
+                  style={{flex: 1}}
               >
-                <Input placeholder="请输入邮箱" />
+                <Input placeholder="请输入邮箱"/>
               </Form.Item>
 
               {/*<DecorativeIcon>*/}
               {/*  <PhoneIcon />*/}
               {/*</DecorativeIcon>*/}
               <Form.Item
-                name="phone"
-                label="电话"
-                rules={[
-                  { required: true, message: '请输入电话号码' },
-                  { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号码' }
-                ]}
-                style={{ flex: 1 }}
+                  name="phone"
+                  label="电话"
+                  rules={[
+                    {required: true, message: '请输入电话号码'},
+                    {pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号码'}
+                  ]}
+                  style={{flex: 1}}
               >
-                <Input placeholder="请输入电话号码" />
+                <Input placeholder="请输入电话号码"/>
               </Form.Item>
             </div>
 
-            <div style={{ display: 'flex', gap: '16px' }}>
+            <div style={{display: 'flex', gap: '16px'}}>
               <Form.Item
-                name="idType"
-                label="证件类型"
-                rules={[{ required: true, message: '请选择证件类型' }]}
-                style={{ flex: 1 }}
+                  name="idType"
+                  label="证件类型"
+                  rules={[{required: true, message: '请选择证件类型'}]}
+                  style={{flex: 1}}
               >
                 <Select>
                   <Select.Option value="ID_CARD">身份证</Select.Option>
@@ -557,12 +707,12 @@ const BookingDetail = () => {
                 </Select>
               </Form.Item>
               <Form.Item
-                name="idNumber"
-                label="证件号码"
-                rules={[{ required: true, message: '请输入证件号码' }]}
-                style={{ flex: 1 }}
+                  name="idNumber"
+                  label="证件号码"
+                  rules={[{required: true, message: '请输入证件号码'}]}
+                  style={{flex: 1}}
               >
-                <Input placeholder="请输入证件号码" />
+                <Input placeholder="请输入证件号码"/>
               </Form.Item>
             </div>
           </Form>

@@ -5,6 +5,7 @@ import { getBookingDetail, cancelBooking, getPassengerById } from '@/services/bo
 import flightApi from '@/services/flightApi';
 import { getAirportByAirportId } from '@/services/airportApi';
 import { formatDate } from '@/utils/formatters';
+import { CABIN_CLASS_MAP } from '@/config';
 import './index.scss';
 
 // 计算航班时长函数
@@ -77,11 +78,13 @@ const BookingDetailView = () => {
         : [];
 
       const bookingData = bookingResponse.data;
+      console.log("bookingData>>>", bookingData);
 
       setBooking({
         ...bookingData,
         // 格式化预订时间
         formattedBookingTime: bookingData?.bookingTime ? formatDate(bookingData.bookingTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
+        CabinsClassName: CABIN_CLASS_MAP[bookingData?.cabinClassType] || 'N/A',
         flightDetails: flightData ? {
           ...flightData,
           formattedDeparture: flightData.departureTime ? formatDate(flightData.departureTime, 'YYYY-MM-DD HH:mm:ss') : 'N/A',
@@ -182,6 +185,7 @@ const BookingDetailView = () => {
             <DescriptionItem label="预订编号">{booking.reference}</DescriptionItem>
             <DescriptionItem label="预订时间">{booking.formattedBookingTime || 'N/A'}</DescriptionItem>
             <DescriptionItem label="联系电话">{booking.contactPhone}</DescriptionItem>
+            <DescriptionItem label="舱位类型">{booking.CabinsClassName}</DescriptionItem>
             <DescriptionItem label="总价">¥{booking.totalPrice}</DescriptionItem>
             <DescriptionItem label="备注" span={2}>{booking?.remarks || '无'}</DescriptionItem>
           </Descriptions>

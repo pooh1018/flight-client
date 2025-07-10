@@ -95,7 +95,7 @@ export const saveSearchHistory = (searchParams, maxItems = 10) => {
       item.tripType === searchParams.tripType &&
       (item.dates && searchParams.dates &&
         item.dates[0]?.getTime() === searchParams.dates[0]?.getTime() &&
-        (item.tripType !== 'roundTrip' ||
+        (item.tripType !== 'roundtrip' ||
           item.dates[1]?.getTime() === searchParams.dates[1]?.getTime()))
     );
 

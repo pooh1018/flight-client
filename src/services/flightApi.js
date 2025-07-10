@@ -45,8 +45,6 @@ const searchFlights = async (params) => {
     const startDate = params.startDate ? formatDateForApi(params.startDate) : null;
     const returnDate = params.returnDate ? formatDateForApi(params.returnDate) : null;
 
-    console.log("returnDate>>>", returnDate);
-
     // 如果是往返航班，需要同时搜索去程和返程
     if (returnDate) {
       const [outboundResponse, inboundResponse] = await Promise.all([
@@ -66,8 +64,8 @@ const searchFlights = async (params) => {
         })
       ]);
 
-      console.log("outboundResponse.data>>>",outboundResponse.data);
-      console.log("inboundResponse.data>>>",inboundResponse.data);
+      // console.log("outboundResponse.data>>>",outboundResponse.data);
+      // console.log("inboundResponse.data>>>",inboundResponse.data);
 
       return {
         success: true,
