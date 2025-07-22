@@ -29,7 +29,8 @@ cd ~/app/flight-client || { log "错误: 项目目录不存在"; exit 1; }
 
 # 拉取最新代码
 log "---- 拉取最新代码 ----"
-git pull origin dev-v0.0.1
+git fetch origin dev-v0.0.1
+git reset --hard origin/dev-v0.0.1  # 危险：会丢失所有本地修改
 
 # npm install
 #log "---- 执行 npm install ----"
