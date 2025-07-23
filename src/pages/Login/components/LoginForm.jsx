@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Checkbox } from '@/components/ui';
+import { WechatOutlined } from '@ant-design/icons';
 import { encrypt } from "@/utils/rsaEncrypt";
 import './AuthForm.css';
 
@@ -52,20 +53,18 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
     formInstance.setFieldValue('rememberMe', rememberMe); // 设置记住我状态
   }, []); // 移除formInstance依赖，只在组件挂载时执行一次
 
-  // 移除未使用的验证函数，已经在常量中定义
-
   const handleSubmit = async (values) => {
     try {
       // 严格验证所有字段
       await formInstance.validateFields(['username', 'password']);
-      
+
       // 检查字段是否为空
       if (!values.username || !values.password) {
         throw new Error('用户名或密码不能为空');
       }
-      
+
       console.log('表单验证通过:', values);
-      
+
       setLoading(true);
 
       // 确保值是字符串类型
@@ -183,6 +182,23 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword }) => {
             className="auth-form__submit-btn"
           >
             登录
+          </Button>
+        </Form.Item>
+
+        <div className="auth-form__divider">
+          <span className="divider-line"></span>
+          <span className="divider-text">或</span>
+          <span className="divider-line"></span>
+        </div>
+
+        <Form.Item>
+          <Button
+            icon={<WechatOutlined />}
+            onClick={() => onForgotPassword('wechat')}
+            block
+            className="auth-form__wechat-btn"
+          >
+            微信登录
           </Button>
         </Form.Item>
 
